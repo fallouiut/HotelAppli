@@ -102,7 +102,8 @@ public class ControllerClientele extends AbstractController {
 						nomServices.add(service.getNom());
 					}
 					m_panel.setChoixService(nomServices);
-					ajouterServiceClient(numReservation);
+					JButton validerBouton = m_panel.getBoutons().get(0);
+					validerBouton.addActionListener(e -> ajouterServiceClient(numReservation));
 				}
 				
 			}

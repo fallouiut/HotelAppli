@@ -69,6 +69,7 @@ public class ClientelePanel extends HotelPanel{
 	    }
 	    JButton validerBouton = new JButton("Valider");
 	    validerBouton.setPreferredSize(new Dimension(75, 20));
+	    m_boutons.add(validerBouton);
 	    choixService.add(panel, BorderLayout.CENTER);
 	    choixService.add(validerBouton, BorderLayout.SOUTH);
 	    

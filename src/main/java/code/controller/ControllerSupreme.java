@@ -4,19 +4,26 @@ import java.awt.CardLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 
 import code.Client;
+import code.Hotel;
 import code.Reservation;
+import code.TypeService;
+import code.model.DAOInterfaces.DAOHotel;
+import code.model.DAOJDBC.DAOHotelJDBC;
 import code.view.Panels.SupremePanel;
 import code.view.Panels.SupremePanel.BOUTONS_SUPREME;
 
 public class ControllerSupreme extends AbstractController {
 
+	private DAOHotel daoHotel = new DAOHotelJDBC();
 	SupremePanel m_panel;
 	public ControllerSupreme(SupremePanel panel) {
 		super();
@@ -68,8 +75,18 @@ public class ControllerSupreme extends AbstractController {
 	// donnees Objet[][]
 	// enTete Objet[][]
 	private void fenetreEtat() {
-		Object[][] donnees = {};
-		String [] enTete = {"Prenom", "Nom", "Date Depart", "Etat Facture"};
+
+		List<Hotel> hotels = daoHotel.findAllLight();
+		Object[][] donnees = new Object[hotels.size()][16];
+		int i = 0;
+		for (Hotel hotel : hotels) {
+			donnees[i][0] = hotel.getNumHotel();
+			donnees[i][1] = hotel.getNom();
+			donnees[i][2] = hotel.getVille();
+			donnees[i][3] = hotel.getAdresse();
+			++i;
+		}
+		String [] enTete = {"Num hotel", "Nom", "Ville", "Adresse"};
 		JTable table = m_panel.setTableauHotels(donnees, enTete); 
 		table.addMouseListener(new MouseAdapter() {
             
@@ -79,12 +96,14 @@ public class ControllerSupreme extends AbstractController {
                 	JTable target = (JTable)e.getSource();
                     int row = target.getSelectedRow();
                     int column = target.getSelectedColumn();
-                    afficherPopUpDecision();
+					Integer numHotel = (Integer)target.getModel().getValueAt(row, 0);
+                    afficherPopUpDecision(numHotel);
                     // Ici recuperer les infos sur l'hotel selectionne
+					Hotel hotel = daoHotel.getById(numHotel);
                 }
                 return;
             }
-			private void afficherPopUpDecision() {
+			private void afficherPopUpDecision(Integer numHotel) {
 				Object[] options = {"Ajouter Service",
 	                    "Supprimer Service",
 	                    "Ajouter travaux", "Ajouter Chambres"};
@@ -99,7 +118,7 @@ public class ControllerSupreme extends AbstractController {
 						if (decision == 0)
 							;//afficherVueAjouterService(client);
 						else if (decision == 1)
-							afficherVueSupprimerService();
+							afficherVueSupprimerService(numHotel);
 						else if (decision == 2)
 							;//afficherVueTravaux();
 						else
@@ -107,7 +126,23 @@ public class ControllerSupreme extends AbstractController {
 				
 			}
 			// recuperer les services
-			private void afficherVueSupprimerService() {
+			private void afficherVueSupprimerService(Integer numHotel) {
+				Set<TypeService> servicesHotel = daoHotel.getServicesById(numHotel);
+				System.out.println(servicesHotel);
+				String[] enTete = {"Service", "Prix"};
+				Object[][] donnees = new Object[servicesHotel.size()][16];
+
+				int i = 0;
+				for (TypeService service : servicesHotel) {
+					donnees[i][0] = service.getNom();
+					donnees[i][1] = service.getPrix();
+					++i;
+				}
+
+				Hotel hotelUpdated = new Hotel();
+				hotelUpdated.setNumHotel(numHotel);
+				hotelUpdated.setServices(servicesHotel);
+
 				JTable table = m_panel.setTableauServices(donnees, enTete);
 				table.addMouseListener(new MouseAdapter() {
 					public void mousePressed(MouseEvent e) {
@@ -116,13 +151,25 @@ public class ControllerSupreme extends AbstractController {
 		                	JTable target = (JTable)e.getSource();
 		                    int row = target.getSelectedRow();
 		                    int column = target.getSelectedColumn();
+		                    String serviceASuppr = (String)target.getModel().getValueAt(row, 0);
+		                    TypeService serviceToRemove = null;
+		                    for (TypeService service : hotelUpdated.getServices()) {
+		                    	if (service.getNom().equals(serviceASuppr)) {
+									serviceToRemove = service;
+									break;
+								}
+							}
+							if (serviceToRemove != null) {
+								hotelUpdated.getServices().remove(serviceToRemove);
+							}
+
 		                    // Ici recuperer le service à supprimer
-		                    afficherPopUpConfirmationSupression();
+		                    afficherPopUpConfirmationSupression(hotelUpdated);
 		                }
 		                return;
 		            }
 
-					private void afficherPopUpConfirmationSupression() {
+					private void afficherPopUpConfirmationSupression(Hotel hotelUpdated) {
 						Object[] options = {"Oui", "Non"};
 						
 						int decision = JOptionPane.showOptionDialog(m_panel,
@@ -133,7 +180,7 @@ public class ControllerSupreme extends AbstractController {
 							    options,
 							    options[1]);
 								if (decision == 0)
-									; // Supprimer le service selectionné 			
+									daoHotel.updateServices(hotelUpdated);
 					}
 				
 				});

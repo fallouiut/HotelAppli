@@ -4,6 +4,7 @@ import code.Chambre;
 import code.Hotel;
 import code.TypeService;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -19,5 +20,7 @@ public interface DAOHotel extends DAO<Hotel, Integer> {
     public void insertServices(int numHotel, Set<TypeService> services);
     public boolean updateChambres(Hotel obj);
     public boolean deleteChambres(Hotel obj);
+
+    public List<Hotel> findAllLight();
 
 }
