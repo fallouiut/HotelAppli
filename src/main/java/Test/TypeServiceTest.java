@@ -19,14 +19,14 @@ public class TypeServiceTest {
     }
 
     public static void testInsert() {
-        TypeService typeService = new TypeService("petit dejeuner", 5.90);
+        TypeService typeService = new TypeService("petit dejeuner", 5);
         TypeService T = new DAOTypeServiceJDBC().insert(typeService);
         System.out.println(T == null ? "null": T.toString());
     }
 
 
     public static void testUpdate() {
-        TypeService typeService = new TypeService("petit dejeuner", 6.20);
+        TypeService typeService = new TypeService("petit dejeuner", 6);
         boolean n = new DAOTypeServiceJDBC().update(typeService);
         System.out.println(n ? "true": false);
     }
@@ -45,7 +45,7 @@ public class TypeServiceTest {
     }
 
     public static void testDelete() {
-        TypeService typeService = new TypeService("petit dejeuner", 5.90);
+        TypeService typeService = new TypeService("petit dejeuner", 5);
 
         boolean isDel = new DAOTypeServiceJDBC().delete(typeService);
         System.out.println(isDel ? "true": "false");

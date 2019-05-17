@@ -2,9 +2,9 @@ package code;
 
 public class TypeService {
     private String nom;
-    private double prix;
+    private float prix;
 
-    public TypeService(String nom, double prix) {
+    public TypeService(String nom, float prix) {
         this.nom = nom;
         this.prix = prix;
     }

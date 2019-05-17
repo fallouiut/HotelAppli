@@ -1,8 +1,7 @@
 package code;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Reservation {
     private int numReservation;
@@ -17,6 +16,8 @@ public class Reservation {
     private List<Chambre> chambres = new ArrayList<>();
     private List<TypeService> services = new ArrayList<>();
     private Hotel hotel;
+
+    private Map<String, Float> facture = new HashMap<>();
 
     public Reservation(int numReservation, LocalDate dateArrivee, LocalDate dateDepart, int nbPersonnes, String etat, float prixTotal, float reduction, Client client, List<Chambre> chambres, List<TypeService> services) {
         this.numReservation = numReservation;
@@ -33,6 +34,10 @@ public class Reservation {
 
     public Reservation () {
 
+    }
+
+    public Map<String, Float> getFacture() {
+        return facture;
     }
 
     public List<TypeService> getServices() {
@@ -123,24 +128,38 @@ public class Reservation {
         this.services = services;
     }
 
-    public void calculerPrixTotal(){
+    public void getDetailFacture(FacturationVisitor facturationVisitor){
+        for(Chambre chambre: this.chambres) {
+            facturationVisitor.visit(chambre);
 
+            for (Option option : chambre.getOptions()) {
+                facturationVisitor.visit(option);
+            }
+        }
+            for(TypeService typeService: this.services) {
+                facturationVisitor.visit(typeService);
+            }
+
+            facturationVisitor.visit(this);
+
+            this.prixTotal = facturationVisitor.getPrixTotal();
+            this.facture = facturationVisitor.getDetails();
     }
 
     @Override
     public String toString() {
         return "Reservation{" +
-                "numReservation=" + numReservation +
-                ", dateArrivee=" + dateArrivee +
-                ", dateDepart=" + dateDepart +
-                ", nbPersonnes=" + nbPersonnes +
-                ", etat='" + etat + '\'' +
-                ", prixTotal=" + prixTotal +
-                ", reduction=" + reduction +
-                ", client=" + client +
-                ", chambres=" + chambres +
-                ", services=" + services +
-                ", hotel=" + hotel +
-                '}';
+            "numReservation=" + numReservation +
+            ", dateArrivee=" + dateArrivee +
+            ", dateDepart=" + dateDepart +
+            ", nbPersonnes=" + nbPersonnes +
+            ", etat='" + etat + '\'' +
+            ", prixTotal=" + prixTotal +
+            ", reduction=" + reduction +
+            ", client=" + client +
+            ", chambres=" + chambres +
+            ", services=" + services +
+            ", hotel=" + hotel +
+            '}';
     }
 }

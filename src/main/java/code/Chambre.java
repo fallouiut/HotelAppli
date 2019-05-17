@@ -45,6 +45,10 @@ public class Chambre {
         return numChambre;
     }
 
+    public Set<Option> getOptions() {
+        return options;
+    }
+
     public void setNumChambre(int numChambre) {
         this.numChambre = numChambre;
     }

@@ -12,6 +12,7 @@ import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ReservationTest {
     public static void main(String args[]) {
@@ -30,7 +31,8 @@ public class ReservationTest {
         //deleteService();
         //testFindByEtatAndUpdate();
         //testUpdateLiensTypeService();
-        testFindHistoriqueClient();
+        //testFindHistoriqueClient();
+        testVisitor();
     }
 
     public static void deleteLiens() {
@@ -158,6 +160,18 @@ public class ReservationTest {
 
     public static void testFindHistoriqueClient() {
         System.out.println(new DAOReservationJDBC().findHistoriqueClient(1));
+    }
+
+    public static void testVisitor() {
+        Reservation r = new DAOReservationJDBC().getById(9);
+
+        r.getDetailFacture(new SimpleFacturationVisitor());
+
+        for (Map.Entry<String, Float> entry : r.getFacture().entrySet()) {
+            System.out.println(entry.getKey() + " " + entry.getValue());
+        }
+
+
     }
 
 }

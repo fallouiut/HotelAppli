@@ -42,7 +42,7 @@ public class DAOTypeServiceJDBC implements DAOTypeService {
             while (resultSet.next()) {
                 services.add(new TypeService (
                         resultSet.getString("nom_s"),
-                        resultSet.getDouble("prix_s")
+                        resultSet.getFloat("prix_s")
                     )
                 );
             }
@@ -68,7 +68,7 @@ public class DAOTypeServiceJDBC implements DAOTypeService {
                 while (resultSet.next()) {
                     service = new TypeService(
                             resultSet.getString("nom_s"),
-                            resultSet.getDouble("prix_s")
+                            resultSet.getFloat("prix_s")
                     );
                 }
                 return service;
