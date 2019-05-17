@@ -34,12 +34,12 @@ public class ConnectionPanel extends HotelPanel {
 	
 	public void construireChampsTextes()
 	{
-		JTextField nomUtilisateur = new JTextField("Nom d'utilisateur");
+		JTextField nomUtilisateur = new JTextField("AdminTest");
 		nomUtilisateur.setColumns(18);
 		m_textes.add(nomUtilisateur);
 		add(nomUtilisateur);
 		
-		JPasswordField motDePasse = new JPasswordField("Mot de passe");
+		JPasswordField motDePasse = new JPasswordField("administrator");
 		motDePasse.setColumns(18);
 		m_textes.add(motDePasse);
 		add(motDePasse);

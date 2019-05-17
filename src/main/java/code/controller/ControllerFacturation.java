@@ -39,7 +39,7 @@ public class ControllerFacturation extends AbstractController {
 	@Override
 	public void initController() 
 	{
-		choisirClient();
+		afficherClientsPresents();
 	}
 	
 	public void choisirClient()
@@ -103,13 +103,12 @@ public class ControllerFacturation extends AbstractController {
 
 	private void afficherClientsPresents() {
 
-		Map<Client, Reservation> clientsPresents = daoClient.findByHotel(admin.getHotelsGeres().get(6));
+		Map<Client, Reservation> clientsPresents = daoClient.findByHotel(admin.getHotelsGeres().get(4));
 		Object[][] donnees = new Object[clientsPresents.size()][12];
 		System.out.println(clientsPresents);
 		int i = 0;
 		for (Map.Entry<Client, Reservation> entry : clientsPresents.entrySet()) {
-			donnees[i][0] =
-					entry.getKey().getNum();
+			donnees[i][0] = entry.getKey().getNum();
 			donnees[i][1] = entry.getKey().getPrenom();
 			donnees[i][2] = entry.getKey().getNom();
 			donnees[i][3] = entry.getKey().getNomEnteprise();
@@ -134,6 +133,7 @@ public class ControllerFacturation extends AbstractController {
 					int column = target.getSelectedColumn();
 					numClient = (Integer)target.getModel().getValueAt(row, 0);
 					numReservation = (Integer)target.getModel().getValueAt(row, 4);
+
 				}
 				return;
 			}

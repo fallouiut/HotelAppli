@@ -175,29 +175,12 @@ public class DAOClientJDBC implements DAOClient {
             } catch (SQLException sqle) {
                 System.err.println("DAOClientJDBC.findByHotel");
                 sqle.printStackTrace();
+            } catch (NullPointerException npe) {
+                System.out.println(npe.getMessage());
+                npe.printStackTrace();
             }
         }
         return null;
     }
 
-    @Override
-    public float getTotlalDepenses(Integer numClient, LocalDate deb, LocalDate fin) {
-        if(numClient != null) {
-            try {
-                String query = "SELECT SUM(prixTotal_r) FROM Reservation WHERE num_cl = ?";
-                PreparedStatement statement = connection.prepareStatement(query);
-                statement.setInt(1, numClient);
-
-                ResultSet resultSet = statement.executeQuery();
-                while (resultSet.next()) {
-                    return resultSet.getInt(1);
-                }
-
-            } catch (SQLException sqle) {
-                System.err.println("DAOClientJDBC.getTotalDepenses");
-                sqle.printStackTrace();
-            }
-        }
-        return -1;
-    }
 }

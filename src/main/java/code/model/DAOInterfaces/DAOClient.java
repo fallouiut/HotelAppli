@@ -11,6 +11,4 @@ public interface DAOClient extends DAO<Client, Integer> {
 
     public Map<Client, Reservation> findByHotel(Integer numHotel);
 
-    float getTotlalDepenses(Integer numClient, LocalDate deb, LocalDate fin);
-
 }

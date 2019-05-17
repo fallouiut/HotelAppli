@@ -21,12 +21,4 @@ public class ClientTest {
         System.out.println(clients);
     }
 
-    public static void main(String args[]) {
-       Client c = daoClientJDBC.getById(37);
-
-       float total = daoClientJDBC.getTotlalDepenses(c.getNum(), null, null);
-        System.out.println("Total client " + c.getNum() + " : " + total);
-
-    }
-
 }
