@@ -157,6 +157,35 @@ public class DAOHotelJDBC implements DAOHotel {
     }
 
     @Override
+    public List<Hotel> findAllLight() {
+        String query = "SELECT * FROM Hotel";
+        try {
+            ResultSet resultSet = connection.createStatement().executeQuery(query);
+
+            List<Hotel> hotels = new ArrayList<>();
+            while (resultSet.next()) {
+
+                hotels.add(new Hotel (
+                        resultSet.getInt("num_h"),
+                        resultSet.getString("nom_h"),
+                        resultSet.getString("ville_h"),
+                        resultSet.getString("adresse_h"),
+                        resultSet.getFloat("latitude_h"),
+                        resultSet.getFloat("longitude_h"),
+                        null,
+                        null,
+                        null
+                ));
+            }
+            return hotels;
+        } catch(SQLException sqle) {
+            System.err.println("DAOHotelJDBC.findAll");
+            sqle.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public Hotel getById(Integer id) {
         if (id != null) {
             String getByIdQuery = "SELECT * FROM Hotel where num_h = ?";
