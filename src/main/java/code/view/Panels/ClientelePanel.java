@@ -3,6 +3,7 @@ package code.view.Panels;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -54,7 +55,7 @@ public class ClientelePanel extends HotelPanel{
 		return table;
 	}
 	
-	public JButton setChoixService(ArrayList <String> services)
+	public JButton setChoixService(List<String> services)
 	{
 		JFrame choixService = new JFrame ("Choix du service");
 		JPanel panel = new JPanel();

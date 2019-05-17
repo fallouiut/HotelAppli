@@ -31,7 +31,7 @@ public class DAOReservationJDBC implements DAOReservation {
                 List<TypeService> services = obj.getServices();
                 if (services != null) {
                     for (TypeService service : obj.getServices()) {
-                        this.deleteLiensTypeService(obj.getNumReservation(), service);
+                        this.deleteLiensTypeService(obj.getNumReservation(), service.getNom());
                     }
                 }
 
@@ -140,7 +140,7 @@ public class DAOReservationJDBC implements DAOReservation {
 
                 if(obj.getServices() != null) {
                     for(TypeService typeService: obj.getServices()) {
-                        if(!this.insertLiensTypeService(obj.getNumReservation(), typeService)){
+                        if(!this.insertLiensTypeService(obj.getNumReservation(), typeService.getNom())){
                             throw new SQLException("inserting links reservation_chambre failed");
                         }
                     }
@@ -379,14 +379,14 @@ public class DAOReservationJDBC implements DAOReservation {
     }
 
     @Override
-    public boolean deleteLiensTypeService(Integer numReservation, TypeService typeService) {
+    public boolean deleteLiensTypeService(Integer numReservation, String typeService) {
         if(numReservation != null) {
             try {
                 PreparedStatement statement;
                 if(typeService != null) {
                     String query = "DELETE FROM Demander WHERE nom_s = ? AND num_r = ?";
                     statement = connection.prepareStatement(query);
-                    statement.setString(1, typeService.getNom());
+                    statement.setString(1, typeService);
                     statement.setInt(2, numReservation);
 
                 } else {
@@ -406,13 +406,13 @@ public class DAOReservationJDBC implements DAOReservation {
     }
 
     @Override
-    public boolean insertLiensTypeService(Integer numReservation, TypeService typeService) {
+    public boolean insertLiensTypeService(Integer numReservation, String typeService) {
         if(typeService != null && numReservation != null){
             String query = "INSERT INTO Demander (nom_s, num_r) VALUES (?, ?)";
             try{
 
                 PreparedStatement statement = connection.prepareStatement(query);
-                statement.setString(1, typeService.getNom());
+                statement.setString(1, typeService);
                 statement.setInt(2, numReservation);
 
                 return (statement.executeUpdate() == 1);
@@ -508,9 +508,9 @@ public class DAOReservationJDBC implements DAOReservation {
     }
 
     @Override
-    public boolean updateLiensTypeService(Integer numReservation, List<TypeService> services) {
+    public boolean updateLiensTypeService(Integer numReservation, List<String> services) {
         deleteLiensTypeService(numReservation, null);
-        for(TypeService service : services) {
+        for(String service : services) {
             if (!insertLiensTypeService(numReservation, service)) {
                 return false;
             }

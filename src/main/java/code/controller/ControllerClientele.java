@@ -14,9 +14,11 @@ import code.*;
 import code.model.DAOInterfaces.DAOClient;
 import code.model.DAOInterfaces.DAOHotel;
 import code.model.DAOInterfaces.DAOReservation;
+import code.model.DAOInterfaces.DAOTypeService;
 import code.model.DAOJDBC.DAOClientJDBC;
 import code.model.DAOJDBC.DAOHotelJDBC;
 import code.model.DAOJDBC.DAOReservationJDBC;
+import code.model.DAOJDBC.DAOTypeServiceJDBC;
 import code.view.Panels.ClientelePanel;
 
 public class ControllerClientele extends AbstractController {
@@ -24,6 +26,7 @@ public class ControllerClientele extends AbstractController {
 	private DAOClient daoClient = new DAOClientJDBC();
 	private DAOReservation daoReservation = new DAOReservationJDBC();
 	private DAOHotel daoHotel = new DAOHotelJDBC();
+	private DAOTypeService daoTypeService = new DAOTypeServiceJDBC();
 	private Admin admin;
 	
 	private ClientelePanel m_panel;
@@ -39,30 +42,31 @@ public class ControllerClientele extends AbstractController {
 	}
 	
 	private void afficherClientsPresents() {
-		Object [][] donneesTest =
-		{
-				{ "Jean", "Bon", "18/05/2019", "Non Payee" }, 
-		   		{ "Marc", "Ise", "25/05/2019", "Non Payee" }, 
-		   		{ "Joyce", "Lyne", "22/05/2019", "Non payee"},
-		};
-		Object[][] donnees = {};
 
 
-		Map<Client, Reservation> clientsPresents = daoClient.findByHotel(admin.getHotelsGeres().get(0));
+		Map<Client, Reservation> clientsPresents = daoClient.findByHotel(admin.getHotelsGeres().get(6));
+		Object[][] donnees = new Object[clientsPresents.size()][12];
+		System.out.println(clientsPresents);
 		int i = 0;
 		for (Map.Entry<Client, Reservation> entry : clientsPresents.entrySet()) {
-			donnees[i][0] = entry.getKey().getPrenom();
-			donnees[i][1] = entry.getKey().getNom();
-			donnees[i][2] = entry.getValue().getDateDepart().toString();
-			donnees[i][3] = "Non PayÃ©e";
+			donnees[i][0] =
+					entry.getKey().getNum();
+			donnees[i][1] = entry.getKey().getPrenom();
+			donnees[i][2] = entry.getKey().getNom();
+			donnees[i][3] = entry.getKey().getNomEnteprise();
+			donnees[i][4] = entry.getValue().getNumReservation();
+			donnees[i][5] = entry.getValue().getDateArrivee().toString();
+			donnees[i][6] = entry.getValue().getDateDepart().toString();
+			donnees[i][7] = entry.getValue().getNbPersonnes();
 			++i;
 		}
 
-		String [] enTete = {"Prenom", "Nom", "Date Depart", "Etat Facture"};
-		JTable table = m_panel.setTableauClients(donneesTest, enTete); 
+		String [] enTete = {"Num client", "Prenom", "Nom", "Entreprise", "Num reservation", "Date Arrivee", "Date Depart", "Nb personnes"};
+		JTable table = m_panel.setTableauClients(donnees, enTete);
 		table.addMouseListener(new MouseAdapter() {
             
-			Client client = null;
+			Integer numClient = null;
+			Integer numReservation = null;
 			public void mousePressed(MouseEvent e) {
                 if (e.getClickCount() == 2) 
                 {
@@ -70,12 +74,12 @@ public class ControllerClientele extends AbstractController {
                     int row = target.getSelectedRow();
                     int column = target.getSelectedColumn();
                     afficherPopUpDecision();
-                    //client = ..
-                    // Ici recuperer  le client à utiliser dans montrerHistoriqueClient() et ajouterServiceClient()
+					numClient = (Integer)target.getModel().getValueAt(row, 0);
+					numReservation = (Integer)target.getModel().getValueAt(row, 4);
                 }
                 return;
             }
-			// recuperer les services disponibles ici
+
 			private void afficherPopUpDecision() {
 				Object[] options = {"Consulter Historique",
 	                    "Ajouter un service",
@@ -88,17 +92,17 @@ public class ControllerClientele extends AbstractController {
 			    options,
 			    options[2]);
 				if (decision == 0)
-					montrerHistorique(client);
+					montrerHistorique(numClient);
 				else if (decision == 1)
 				{
 					// recuperer les services disponibles
-					ArrayList <String> services = new ArrayList <String> ();
-					services.add("boisson");
-					services.add("cocktail");
-					services.add("petit dej");
-					services.add("ménage");
-					m_panel.setChoixService(services);
-					ajouterServiceClient(client);
+					List <TypeService> services = daoTypeService.findAll();
+					List<String> nomServices = new ArrayList<>();
+					for (TypeService service : services) {
+						nomServices.add(service.getNom());
+					}
+					m_panel.setChoixService(nomServices);
+					ajouterServiceClient(numReservation);
 				}
 				
 			}
@@ -106,33 +110,43 @@ public class ControllerClientele extends AbstractController {
 	}
        
 	// recuperer historique ici
-	private void montrerHistorique(Client client)
+	private void montrerHistorique(Integer numClient)
 	{
-		List<Reservation> reservations = daoReservation.findHistoriqueClient(client.getNum());
-		Object [][] donnees ={};
+		System.out.println(numClient);
+		List<Reservation> reservations = daoReservation.findHistoriqueClient(numClient);
+		System.out.println(reservations);
+		Object [][] donnees = new Object[reservations.size()][16];
 
 		for (int i = 0 ; i < reservations.size() ; ++i) {
 			donnees[i][0] = reservations.get(i).getHotel().getNom();
-			donnees[i][1] = reservations.get(i).getDateArrivee().toString();
-			donnees[i][2] = reservations.get(i).getDateDepart().toString();
-			donnees[i][3] = reservations.get(i).getDateDepart().isAfter(LocalDate.now()) ? "Non payÃ©e" : "PayÃ©e";
+			donnees[i][1] = reservations.get(i).getClient().getPrenom();
+			donnees[i][2] = reservations.get(i).getClient().getNom();
+			donnees[i][3] = reservations.get(i).getClient().getNomEnteprise();
+			donnees[i][4] = reservations.get(i).getNumReservation();
+			donnees[i][5] = reservations.get(i).getDateArrivee().toString();
+			donnees[i][6] = reservations.get(i).getDateDepart().toString();
+			donnees[i][7] = reservations.get(i).getNbPersonnes();
+			donnees[i][8] = reservations.get(i).getEtat();
+			donnees[i][9] = reservations.get(i).getPrixTotal();
+			donnees[i][10] = reservations.get(i).getReduction();
+			donnees[i][11] = reservations.get(i).getDateDepart().isAfter(LocalDate.now()) ? "Non payée" : "Payée";
 		}
 
-		String [] enTete = {"Hotel", "Date Debut", "Date Fin", "Facture"};
+		String [] enTete = {"Hotel", "Nom", "Prenom", "Entreprise", "Num reservation", "Date Debut", "Date Fin", "Nb personnes", "Etat", "Prix total", "Reduction", "Facture"};
 		m_panel.setTableauHistorique(donnees, enTete);
 		JButton boutonPub = m_panel.getBoutons().get(0);
 		boutonPub.addActionListener(e -> envoyerPub());
 	}
 	// ajouter service ici
-	private void ajouterServiceClient(Client client) {
-		ArrayList <String> servicesAjoutes = new ArrayList <String> ();
+	private void ajouterServiceClient(Integer numReservation) {
+		List <String> servicesAjoutes = new ArrayList <String> ();
 		for (JCheckBox box : m_panel.getBoxes())
 		{
 			if (box.isSelected())
 				servicesAjoutes.add(box.getText());
 		}
 		System.out.println(servicesAjoutes.toString());
-		// Ajouter les services
+		daoReservation.updateLiensTypeService(numReservation, servicesAjoutes);
 	}
 
 	private void envoyerPub() {

@@ -150,16 +150,11 @@ public class DAOClientJDBC implements DAOClient {
 
                 Map<Client, Reservation> result = new HashMap<>();
                 while (resultSet.next()) {
-                    Client newClient = new Client (
-                            resultSet.getInt("num_cl"),
-                            resultSet.getString("nom_cl"),
-                            resultSet.getString("prenom_cl"),
-                            resultSet.getString("nomEntreprise"),
-                            resultSet.getString("telephone_cl"),
-                            resultSet.getString("mail_cl"),
-                            resultSet.getString("pseudo"),
-                            resultSet.getString("motdepasse")
-                    );
+                    Client client = new Client();
+                    client.setNum(resultSet.getInt("num_cl"));
+                    client.setNom(resultSet.getString("nom_cl"));
+                    client.setPrenom(resultSet.getString("prenom_cl"));
+                    client.setNomEnteprise(resultSet.getString("nomEntreprise"));
 
                     Reservation reservation = new Reservation(
                             resultSet.getInt("num_r"),
@@ -169,11 +164,11 @@ public class DAOClientJDBC implements DAOClient {
                             resultSet.getString("etat_r"),
                             resultSet.getFloat("prixTotal_r"),
                             resultSet.getFloat("reduction_r"),
-                            newClient,
+                            null,
                             null,
                             null
                     );
-                    result.put(newClient, reservation);
+                    result.put(client, reservation);
                 }
                 return result;
 
