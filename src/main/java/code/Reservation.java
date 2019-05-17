@@ -124,7 +124,7 @@ public class Reservation {
     }
 
     public void calculerPrixTotal(){
-        
+
     }
 
     @Override
