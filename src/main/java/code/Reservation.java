@@ -123,6 +123,10 @@ public class Reservation {
         this.services = services;
     }
 
+    public void calculerPrixTotal(){
+        
+    }
+
     @Override
     public String toString() {
         return "Reservation{" +
