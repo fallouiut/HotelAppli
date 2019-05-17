@@ -2,6 +2,7 @@ package code.model.DAOJDBC;
 
 import code.*;
 import code.model.ConnexionUnique;
+import code.model.DAOInterfaces.DAOChambre;
 import code.model.DAOInterfaces.DAOReservation;
 import javafx.util.Pair;
 
@@ -30,7 +31,7 @@ public class DAOReservationJDBC implements DAOReservation {
                 List<TypeService> services = obj.getServices();
                 if (services != null) {
                     for (TypeService service : obj.getServices()) {
-                        this.deleteLiensTypeService(obj, service);
+                        this.deleteLiensTypeService(obj.getNumReservation(), service);
                     }
                 }
 
@@ -139,7 +140,7 @@ public class DAOReservationJDBC implements DAOReservation {
 
                 if(obj.getServices() != null) {
                     for(TypeService typeService: obj.getServices()) {
-                        if(!this.insertLiensTypeService(obj, typeService)){
+                        if(!this.insertLiensTypeService(obj.getNumReservation(), typeService)){
                             throw new SQLException("inserting links reservation_chambre failed");
                         }
                     }
@@ -280,10 +281,11 @@ public class DAOReservationJDBC implements DAOReservation {
     @Override
     public List<Reservation> findHistoriqueClient(Integer numClient) {
         if(numClient != null) {
-            String query = "SELECT DISTINCT R.*, RC.num_h, H.nom_h FROM Reservation R";
+            String query = "SELECT DISTINCT nom_cl, prenom_cl, nomEntreprise, R.*, RC.num_h, H.nom_h FROM Reservation R";
+            query += " JOIN Client CL on R.num_cl = CL.num_cl";
             query += " JOIN ReservationChambre RC ON R.num_r = RC.num_r";
             query += " JOIN Chambre C ON RC.num_h = C.num_h";
-            query += " JOIN Hotel H ON C.num_h = H.num_h WHERE num_cl = ?";
+            query += " JOIN Hotel H ON C.num_h = H.num_h WHERE R.num_cl = ?";
 
             try {
                 PreparedStatement statement = connection.prepareStatement(query);
@@ -291,20 +293,20 @@ public class DAOReservationJDBC implements DAOReservation {
                 ResultSet resultSet = statement.executeQuery();
                 List<Reservation> historique = new ArrayList<>();
                 while(resultSet.next()) {
-                    Reservation reservation = new  Reservation (
-                            resultSet.getInt("num_r"),
-                            resultSet.getDate("dateAr_r").toLocalDate(),
-                            resultSet.getDate("dateDep_r").toLocalDate(),
-                            resultSet.getInt("nbPersonnes_r"),
-                            resultSet.getString("etat_r"),
-                            resultSet.getFloat("prixTotal_r"),
-                            resultSet.getFloat("reduction_r"),
-                            new DAOClientJDBC().getById(resultSet.getInt("num_cl")),
-                            this.getChambres(resultSet.getInt("num_r")),
-                            this.getTypeServices(resultSet.getInt("num_r"))
-                    );
+                    Reservation reservation = new Reservation();
+                    reservation.setNumReservation(resultSet.getInt("num_r"));
+                    reservation.setDateArrivee(resultSet.getDate("dateAr_r").toLocalDate());
+                    reservation.setDateDepart(resultSet.getDate("dateDep_r").toLocalDate());
+                    reservation.setNbPersonnes(resultSet.getInt("nbPersonnes_r"));
+                    reservation.setEtat(resultSet.getString("etat_r"));
+                    reservation.setPrixTotal(resultSet.getFloat("prixTotal_r"));
+                    reservation.setReduction(resultSet.getFloat("reduction_r"));
+                    Client client = new Client();
+                    client.setNomEnteprise(resultSet.getString("nomEntreprise"));
+                    client.setNom(resultSet.getString("nom_cl"));
+                    client.setPrenom(resultSet.getString("prenom_cl"));
+                    reservation.setClient(client);
                     Hotel hotel = new Hotel();
-                    hotel.setNumHotel(resultSet.getInt("num_h"));
                     hotel.setNom(resultSet.getString("nom_h"));
                     reservation.setHotel(hotel);
                     historique.add(reservation);
@@ -377,6 +379,53 @@ public class DAOReservationJDBC implements DAOReservation {
     }
 
     @Override
+    public boolean deleteLiensTypeService(Integer numReservation, TypeService typeService) {
+        if(numReservation != null) {
+            try {
+                PreparedStatement statement;
+                if(typeService != null) {
+                    String query = "DELETE FROM Demander WHERE nom_s = ? AND num_r = ?";
+                    statement = connection.prepareStatement(query);
+                    statement.setString(1, typeService.getNom());
+                    statement.setInt(2, numReservation);
+
+                } else {
+                    String query = "DELETE FROM Demander WHERE num_r = ?";
+                    statement = connection.prepareStatement(query);
+                    statement.setInt(1, numReservation);
+                }
+
+                int nb = statement.executeUpdate();
+                return true;
+            } catch (SQLException sqle) {
+                System.out.println(sqle.getMessage());
+                sqle.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean insertLiensTypeService(Integer numReservation, TypeService typeService) {
+        if(typeService != null && numReservation != null){
+            String query = "INSERT INTO Demander (nom_s, num_r) VALUES (?, ?)";
+            try{
+
+                PreparedStatement statement = connection.prepareStatement(query);
+                statement.setString(1, typeService.getNom());
+                statement.setInt(2, numReservation);
+
+                return (statement.executeUpdate() == 1);
+
+            } catch (SQLException sqle) {
+                sqle.getMessage();
+                sqle.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    @Override
     public List<Reservation> findByEtat(Integer numHotel, String etat) {
         try {
             String queryFindByEtat = "SELECT DISTINCT RC.num_h, R.*, nom_cl, prenom_cl, nomEntreprise";
@@ -415,52 +464,18 @@ public class DAOReservationJDBC implements DAOReservation {
     }
 
     @Override
-    public boolean deleteLiensTypeService(Reservation reservation, TypeService typeService) {
-        if(reservation != null) {
+    public boolean updateEtatReservation(Integer numReservation, String etat) {
+        if (numReservation != null) {
             try {
-                PreparedStatement statement;
-                if(typeService != null) {
-                    String query = "DELETE FROM Demander WHERE nom_s = ? AND num_r = ?";
-                    statement = connection.prepareStatement(query);
-                    statement.setString(1, typeService.getNom());
-                    statement.setInt(2, reservation.getNumReservation());
-
-                } else {
-                    String query = "DELETE FROM Demander WHERE num_r = ?";
-                    statement = connection.prepareStatement(query);
-                    statement.setInt(1, reservation.getNumReservation());
-                }
-
-                int nb = statement.executeUpdate();
-                if(nb < 1) {
-                    throw new SQLException("Erreur suppressions");
-                }
-                return (nb >= 1);
-            } catch (SQLException sqle) {
-                System.out.println(sqle.getMessage());
-                sqle.printStackTrace();
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                e.printStackTrace();
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean insertLiensTypeService(Reservation reservation, TypeService typeService) {
-        if(typeService != null && reservation != null){
-            String query = "INSERT INTO Demander (nom_s, num_r) VALUES (?, ?)";
-            try{
-
-                PreparedStatement statement = connection.prepareStatement(query);
-                statement.setString(1, typeService.getNom());
-                statement.setInt(2, reservation.getNumReservation());
-
-                return (statement.executeUpdate() == 1);
+                String queryUpdateEtat = "UPDATE Reservation SET etat_r = ? WHERE num_r = ?";
+                PreparedStatement ps = connection.prepareStatement(queryUpdateEtat);
+                ps.setString(1, etat);
+                ps.setInt(2, numReservation);
+                int resultUpdate = ps.executeUpdate();
+                return resultUpdate == 1;
 
             } catch (SQLException sqle) {
-                sqle.getMessage();
+                System.err.println("DAOReservationJDBC.updateEtatReservation");
                 sqle.printStackTrace();
             }
         }
@@ -468,7 +483,38 @@ public class DAOReservationJDBC implements DAOReservation {
     }
 
     @Override
-    public boolean updateLiensTypeService(Reservation reservation) {
+    public boolean insertHistoriqueReservation(Integer numReservation, EtatChambre etatChambre) {
+        if (numReservation != null) {
+            String queryGetNumChambres = "SELECT num_h, num_c FROM ReservationChambre WHERE num_r = ?";
+            try {
+                PreparedStatement ps = connection.prepareStatement(queryGetNumChambres);
+                ps.setInt(1, numReservation);
+                ResultSet resultSet = ps.executeQuery();
+
+                DAOChambre daoChambre = new DAOChambreJDBC();
+                while (resultSet.next()) {
+                    Chambre chambre = new Chambre();
+                    chambre.setNumHotel(resultSet.getInt("num_h"));
+                    chambre.setNumChambre(resultSet.getInt("num_c"));
+                    chambre.setEtat(etatChambre);
+                    daoChambre.insertEntreeHistorique(chambre);
+                }
+            } catch (SQLException sqle) {
+                System.err.println("DAOReservationJDBC.insertHistoriqueReservation");
+                sqle.printStackTrace();
+            }
+        }
         return false;
+    }
+
+    @Override
+    public boolean updateLiensTypeService(Integer numReservation, List<TypeService> services) {
+        deleteLiensTypeService(numReservation, null);
+        for(TypeService service : services) {
+            if (!insertLiensTypeService(numReservation, service)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

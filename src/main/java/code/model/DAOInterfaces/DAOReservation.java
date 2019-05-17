@@ -1,6 +1,7 @@
 package code.model.DAOInterfaces;
 
 import code.Chambre;
+import code.EtatChambre;
 import code.Reservation;
 import code.TypeService;
 import org.omg.CORBA.PUBLIC_MEMBER;
@@ -17,9 +18,11 @@ public interface DAOReservation extends DAO<Reservation, Integer> {
     public List<Reservation> getByHotel(Integer numHotel);
 
     public List<TypeService> getTypeServices(Integer integer);
-    public boolean deleteLiensTypeService(Reservation reservation, TypeService typeService);
-    public boolean insertLiensTypeService(Reservation reservation, TypeService typeService);
-    public boolean updateLiensTypeService(Reservation reservation);
+    public boolean deleteLiensTypeService(Integer numReservation, TypeService typeService);
+    public boolean insertLiensTypeService(Integer numReservation, TypeService typeService);
+    public boolean updateLiensTypeService(Integer numReservation, List<TypeService> services);
 
     public List<Reservation> findByEtat(Integer numHotel, String etat);
+    public boolean updateEtatReservation(Integer numReservation, String etat);
+    public boolean insertHistoriqueReservation(Integer numReservation, EtatChambre etatChambre);
 }

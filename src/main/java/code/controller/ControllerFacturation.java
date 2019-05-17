@@ -1,52 +1,90 @@
 package code.controller;
 
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-import code.controller.ControllerVue.PANEL;
+import javax.swing.JButton;
+import javax.swing.JTable;
+
 import code.view.Panels.FacturationPanel;
-import code.view.Vues.Vue;
 
 public class ControllerFacturation extends AbstractController {
 
 	private FacturationPanel m_panel;
-	public ControllerFacturation(Vue vue) {
-		super(vue);
-		m_panel = (FacturationPanel) ControllerVue.getPanel(PANEL.FACTURATION);
+	public ControllerFacturation(FacturationPanel facturationPanel) {
+		m_panel = facturationPanel;
 		initController();
 	}
 
 	@Override
 	public void initController() 
 	{
-		JButton validerBouton = m_panel.getBoutons().get(0);
-		validerBouton.addActionListener(e -> rechercherClient());
+		choisirClient();
 	}
 	
-	// id client a verifier
-	public void rechercherClient()
-	{
-			String texte = m_panel.getTextes().get(0).getText();
-			
-			// Verifier id client
-			if (true)
-				faireFacture();
-			else
-				JOptionPane.showMessageDialog(m_panel, "Cet ID ne fait r�f�rence a aucun client. \n\n ID : " + texte, "Error", JOptionPane.WARNING_MESSAGE);
-	}
-	
-	// recuperer Details Factures
-	public void faireFacture()
+	public void choisirClient()
 	{
 		Object [][] donnees = 
-		{
-				{ "Reservation chambre", "150�", "3 jours et 2 personnes" }, 
-		   		{ "Repas restaurant", "68�", "" }, 
-		   		{ "Menage chambre", "15�", "Une fois"},
-		};
-		
-		String [] enTete = {"Type Depense", "Prix", "Details"};
-		m_panel.setTableauFacture(donnees, enTete);
+			{
+					{ "JeanTest", "Test" }, 
+			   		{ "BernardTest", "Test"}, 
+			   		{ "MarieTest", "Test"},
+			};
+			
+		String [] enTete = {"NomTest", "Type"};
+		// Ici recuperer les clients presents
+		JTable table = m_panel.setTableauClients(donnees, enTete);
+		table.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                if (e.getClickCount() == 2) 
+                {
+                    JTable target = (JTable)e.getSource();
+                    int row = target.getSelectedRow();
+                    int column = target.getSelectedColumn();
+                    // Ici recuperer les infos reservations
+            		Object [][] donnees = 
+            			{
+            					{ "ReservationATest", "Test" }, 
+            			   		{ "ReservationBTest", "Test"}, 
+            			   		{ "ReservationCTest", "Test"},
+            			};
+            			
+            			String [] enTete = {"ReservationTest", "Type"};
+                   choisirReservation(m_panel.setTableauReservation(donnees, enTete));
+                }
+            }
+
+			private void choisirReservation(JTable tableauReservation) {
+				tableauReservation.addMouseListener(new MouseAdapter() {
+                    public void mousePressed(MouseEvent e) {
+                        if (e.getClickCount() == 2) 
+                        {
+                            JTable target = (JTable)e.getSource();
+                            int row = target.getSelectedRow();
+                            int column = target.getSelectedColumn();
+                            // Ici recuperer les details de la facture
+                    		Object [][] donnees = 
+                    			{
+                    					{ "FactureATest", "Test" }, 
+                    			   		{ "FactureBTest", "Test"}, 
+                    			   		{ "FactureCTest", "Test"},
+                    			};
+                    			
+                    			String [] enTete = {"NomTest", "Type"};
+                            m_panel.setTableauFacture(donnees, enTete);
+                    		JButton bouton = m_panel.getBoutons().get(0);
+                    		bouton.addActionListener(e1 -> valider());
+                        }
+                    }	
+                });
+			}
+		});
+	}
+	
+	// Ici valider la facture
+	private Object valider() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

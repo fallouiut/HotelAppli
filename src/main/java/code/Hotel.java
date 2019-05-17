@@ -16,9 +16,9 @@ public class Hotel {
     private  String adresse;
     private float latitude;
     private float longitude;
-    private Set<TypeService> services = new HashSet<TypeService>();
-    private Set<Chambre> chambres = new HashSet<Chambre>();
-    private List<Reservation> reservations = new ArrayList<Reservation>();
+    private Set<TypeService> services = new HashSet<>();
+    private Set<Chambre> chambres = new HashSet<>();
+    private List<Reservation> reservations = new ArrayList<>();
 
     public Hotel() {}
 

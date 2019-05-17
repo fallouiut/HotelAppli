@@ -1,113 +1,139 @@
 package code.controller;
 
-import javax.swing.JMenuItem;
+import java.awt.CardLayout;
+import java.awt.Component;
 
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+
+import code.view.Panels.AccueilPanel;
+import code.view.Panels.ClientelePanel;
+import code.view.Panels.ConnectionPanel;
+import code.view.Panels.FacturationPanel;
 import code.view.Panels.HotelPanel;
+import code.view.Panels.ReservationPanel;
+import code.view.Panels.SupremePanel;
 import code.view.Vues.Vue;
 public class ControllerVue extends AbstractController {
-	
-	public enum PANEL { CONNECTION, ACCUEIL, CLIENTELE, FACTURATION, RESERVATION, SUPREME, RETOUR };
-	public enum ETAT_CONNECTION { UNDEFINED, CONNECTED, DISCONNECTED };
 	
 	public boolean m_clienteleSet = false;
 	public boolean m_reservationSet = false;
 	public boolean m_facturationSet = false;
 	public boolean m_supremeSet = false;
-	
-	private HotelPanel m_panelCourant;
 	private ETAT_CONNECTION m_connecte = ETAT_CONNECTION.UNDEFINED;
 	private boolean m_retour = false;
 	private ControllerConnection m_connection;
+	private Vue m_vue = new Vue();
+	private PANEL m_panelCourant;
 	
 	public ControllerVue() {
-		super(new Vue());
+		super();
 		initController();
 		deroulement();
 	}
 
 	public void deroulement()
 	{
-		m_panelCourant = getPanel(PANEL.CONNECTION);
-		m_vue.add(m_panelCourant);
+		CardLayout c = (CardLayout)(m_vue.getContentPane().getLayout());
+		c.show(m_vue.getContentPane(), getPanel(PANEL.CONNECTION));
+		m_panelCourant = PANEL.CONNECTION;
 		m_vue.pack();
+		HotelPanel panelCourant;
 		while (true)
 		{
-			while (m_panelCourant.fonctionne())
+			panelCourant = getControlledPanel(getPanel(m_panelCourant));
+			while (panelCourant.fonctionne())
 			{
 				if ( m_connecte == ETAT_CONNECTION.DISCONNECTED || m_retour)
 					break;
 			}
-			m_vue.remove(m_panelCourant);
-			int retourTransition = transition();
-			m_panelCourant = m_vue.getPanels().get(retourTransition);
-			m_vue.add(m_panelCourant);
+			m_panelCourant = transition();
+			c.show(m_vue.getContentPane(), getPanel(m_panelCourant));
 			m_vue.pack();
 		}
 	}
 	
-	public int transition()
+	public PANEL transition()
 	{
-		int returnValue = -1;
-		m_panelCourant.setTermine(false);
+		PANEL returnValue = null;
+		getControlledPanel(getPanel(m_panelCourant)).setTermine(false);
 		if (m_connecte == ETAT_CONNECTION.DISCONNECTED)
 		{
 			m_vue.getMenu().setEnabled(false);
-			returnValue = PANEL.CONNECTION.ordinal();
+			returnValue = PANEL.CONNECTION;
 		}
-		else if (m_panelCourant.equals(getPanel(PANEL.CONNECTION)))
+		else if (m_panelCourant == PANEL.CONNECTION)
 		{
 			m_connecte = ETAT_CONNECTION.CONNECTED;	
-			returnValue = PANEL.ACCUEIL.ordinal();
+			returnValue = PANEL.ACCUEIL;
 			m_vue.getMenu().setEnabled(true);
-			new ControllerAccueil(m_vue, m_connection.getAdmin());
+			new ControllerAccueil((AccueilPanel) getControlledPanel(getPanel(PANEL.ACCUEIL)), m_connection.getAdmin());
 		}
 		else if (m_retour)
-			returnValue = PANEL.ACCUEIL.ordinal();
-		else if (m_panelCourant.equals(getPanel(PANEL.ACCUEIL)))
-			returnValue =  ControllerAccueil.getProchainPanel().ordinal();
-		else if (m_panelCourant.equals(getPanel(PANEL.FACTURATION)))
+			returnValue = PANEL.ACCUEIL;
+		else if (m_panelCourant == PANEL.ACCUEIL)
+		{
+			m_panelCourant =  ControllerAccueil.getProchainPanel();
+			transition();
+			return m_panelCourant;
+		}
+		else if (m_panelCourant == PANEL.FACTURATION)
 		{
 			if (!m_facturationSet)
 			{
-				new ControllerFacturation(m_vue);
+				new ControllerFacturation((FacturationPanel) getControlledPanel(getPanel(PANEL.FACTURATION)));
 				m_facturationSet = true;
 			}
 		}
-		else if (m_panelCourant.equals(getPanel(PANEL.SUPREME)))
+		else if (m_panelCourant == PANEL.SUPREME)
 		{
 			if (!m_supremeSet)
 			{
-				new ControllerSupreme(m_vue);
+				new ControllerSupreme((SupremePanel) getControlledPanel(getPanel(PANEL.SUPREME)));
 				m_supremeSet = true;
 			}
 		}
-		else if (m_panelCourant.equals(getPanel(PANEL.RESERVATION)))
+		else if (m_panelCourant == PANEL.RESERVATION)
 		{
-			if (m_reservationSet)
+			if (!m_reservationSet)
 			{
-				new ControllerReservation(m_vue);
+				new ControllerReservation((ReservationPanel) getControlledPanel(getPanel(PANEL.RESERVATION)));
 				m_reservationSet = true;
 			}
 		}
+		else if (m_panelCourant == PANEL.CLIENTELE)
+		{
+			if (!m_clienteleSet)
+			{
+				new ControllerClientele((ClientelePanel) getControlledPanel(getPanel(PANEL.CLIENTELE)));
+				m_clienteleSet = true;
+			}
+		}
 		m_retour = false;
-		if (returnValue == -1)
-			System.err.println("Error in transition");
 		return returnValue;
 	}
-
-	public HotelPanel getPanelCourant()
-	{
-		return m_panelCourant;
-	}
 	
-	public static HotelPanel getPanel(PANEL typePanel)
+	public static String getPanel(PANEL typePanel)
 	{
-		return m_vue.getPanels().get(typePanel.ordinal());
+		if (typePanel == PANEL.CONNECTION)
+				return CONNECTION;
+		else if (typePanel == PANEL.CLIENTELE)
+			return CLIENTELE;
+		else if (typePanel == PANEL.FACTURATION)
+			return FACTURATION;
+		else if (typePanel == PANEL.SUPREME)
+			return SUPREME;
+		else if(typePanel == PANEL.RESERVATION)
+			return RESERVATION;
+		else if (typePanel == PANEL.ACCUEIL)
+			return ACCUEIL;
+		System.err.println("Error in getPanel()");
+		return null;
 	}
 
 	@Override
 	public void initController() {
-		m_connection = new ControllerConnection(m_vue);
+		m_connection = new ControllerConnection((ConnectionPanel) getControlledPanel(getPanel(PANEL.CONNECTION)));
 		JMenuItem deconnection = m_vue.getMenuItem().get(Vue.MENU_ITEM.DECONNECTION.ordinal());
 		deconnection.addActionListener(e -> deconnecter());
 		JMenuItem retour = m_vue.getMenuItem().get(Vue.MENU_ITEM.RETOUR.ordinal());
@@ -117,11 +143,22 @@ public class ControllerVue extends AbstractController {
 	private void retour() {
 		m_retour = true;
 	}
-
+	
 	private void deconnecter() {
 		m_connecte = ETAT_CONNECTION.DISCONNECTED;
 	}
-
+	
+	public HotelPanel getControlledPanel(String s)
+	{
+		for (Component component : m_vue.getContentPane().getComponents())
+		{
+			HotelPanel panel = (HotelPanel) component;
+			if (panel.getName().equals(s))
+				return (HotelPanel) component;
+		}
+		return null;
+	}
+	
 	public static void main(String[] args) {
 		new ControllerVue();
 	}

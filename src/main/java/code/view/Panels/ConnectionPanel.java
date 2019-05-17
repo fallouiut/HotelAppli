@@ -14,10 +14,10 @@ public class ConnectionPanel extends HotelPanel {
 	
 	public enum CHAMPS_CONNECTION { NOM_UTILISATEUR, MOT_DE_PASSE } ;
 
-	public ConnectionPanel() {
-		super();
-		m_mainPanel.setLayout(new FlowLayout(FlowLayout.LEADING, LONGUEUR / 4, 10));
-		m_mainPanel.setPreferredSize(new Dimension(LONGUEUR, LARGEUR));
+	public ConnectionPanel(String type) {
+		super(type);
+		setLayout(new FlowLayout(FlowLayout.LEADING, LONGUEUR / 4, 10));
+		setPreferredSize(new Dimension(LONGUEUR, LARGEUR));
 		
 		construireChampsTextes();
 		construireConnectionBouton();
@@ -29,7 +29,7 @@ public class ConnectionPanel extends HotelPanel {
 		JButton validerButton = new JButton("Valider");
 		validerButton.setPreferredSize(new Dimension(75, 20));
 		m_boutons.add(validerButton);
-		m_mainPanel.add(validerButton);
+		add(validerButton);
 	}
 	
 	public void construireChampsTextes()
@@ -37,12 +37,12 @@ public class ConnectionPanel extends HotelPanel {
 		JTextField nomUtilisateur = new JTextField("Nom d'utilisateur");
 		nomUtilisateur.setColumns(18);
 		m_textes.add(nomUtilisateur);
-		m_mainPanel.add(nomUtilisateur);
+		add(nomUtilisateur);
 		
 		JPasswordField motDePasse = new JPasswordField("Mot de passe");
 		motDePasse.setColumns(18);
 		m_textes.add(motDePasse);
-		m_mainPanel.add(motDePasse);
+		add(motDePasse);
 		
 		for (JTextField textField : m_textes)
 			textField.addMouseListener(new MouseListener() {
@@ -88,11 +88,5 @@ public class ConnectionPanel extends HotelPanel {
 		if (nomUtilisateur == "" || motDePasse == "")
 			return false;
 		return true;
-	}
-
-
-	@Override
-	public boolean fonctionne() {
-		return !m_termine;
 	}
 }

@@ -15,8 +15,8 @@ public class Admin {
     private int numAdmin;
     private String identifiant;
     private String mdp;
-    private List<Integer> hotelsGeres = new ArrayList<Integer>();
-    private Map<String, Boolean> droits = new HashMap<String, Boolean>();
+    private List<Integer> hotelsGeres = new ArrayList<>();
+    private Map<String, Boolean> droits = new HashMap<>();
 
     public Admin() {}
 

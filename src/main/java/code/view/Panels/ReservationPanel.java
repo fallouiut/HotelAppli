@@ -1,11 +1,9 @@
 package code.view.Panels;
 public class ReservationPanel extends HotelPanel {
 
-	@Override
-	public boolean fonctionne() {
-		// TODO Auto-generated method stub
-		return false;
+	public ReservationPanel(String type) {
+		super(type);
+		// TODO Auto-generated constructor stub
 	}
-
 	
 }

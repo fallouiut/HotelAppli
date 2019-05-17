@@ -4,12 +4,10 @@ import javax.swing.JOptionPane;
 
 import code.Admin;
 import code.SessionUnique;
-import code.controller.ControllerVue.PANEL;
 import code.model.DAOInterfaces.DAOAdmin;
 import code.model.DAOJDBC.DAOAdminJDBC;
 import code.view.Panels.ConnectionPanel;
 import code.view.Panels.ConnectionPanel.CHAMPS_CONNECTION;
-import code.view.Vues.Vue;
 
 public class ControllerConnection extends AbstractController {
 
@@ -19,15 +17,14 @@ public class ControllerConnection extends AbstractController {
 	private DAOAdmin daoAdmin;
 	private Admin m_admin;
 	
-	public ControllerConnection(Vue vue) {
-		super(vue);
+	public ControllerConnection(ConnectionPanel panel) {
+		m_panel = panel;
 		daoAdmin = new DAOAdminJDBC();
 		initController();
 	}
 
 	@Override
 	public void initController() {
-		m_panel = (ConnectionPanel) ControllerVue.getPanel(PANEL.CONNECTION);
 		JButton validerBouton = m_panel.getBoutons().get(0);
 		validerBouton.addActionListener(e -> verifierIdentifiants());
 	}
@@ -37,9 +34,9 @@ public class ControllerConnection extends AbstractController {
 		m_nomUtilisateur = m_panel.getTextes().get(CHAMPS_CONNECTION.NOM_UTILISATEUR.ordinal()).getText();
 		m_motDePasse = m_panel.getTextes().get(CHAMPS_CONNECTION.MOT_DE_PASSE.ordinal()).getText();
 		// Enlever
-		/*m_nomUtilisateur = "AdminTest";
+		m_nomUtilisateur = "AdminTest";
 		m_motDePasse = "administrator";
-		m_admin = daoAdmin.findByUsernameAndPassword(m_nomUtilisateur, m_motDePasse);*/
+		/*m_admin = daoAdmin.findByUsernameAndPassword(m_nomUtilisateur, m_motDePasse);*/
 		SessionUnique.username = m_nomUtilisateur;
 		SessionUnique.password = m_motDePasse;
 		m_admin = null;
@@ -63,9 +60,5 @@ public class ControllerConnection extends AbstractController {
 	public Admin getAdmin()
 	{
 		return m_admin;
-	}
-
-	public static void main(String[] args) {
-		new ControllerConnection(new Vue());
 	}
 }

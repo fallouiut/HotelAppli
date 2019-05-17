@@ -2,9 +2,6 @@ package code.view.Panels;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -13,103 +10,37 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 
 public class ClientelePanel extends HotelPanel{
-	public enum CHAMPS_CLIENTELE { RECHERCHE, SERVICE_CLIENT, HOTEL};
 	
 	private ArrayList <JCheckBox> m_boxes = new ArrayList <JCheckBox> ();
-	@Override
-	public boolean fonctionne() {
-		return !m_termine;
+	
+	public ClientelePanel(String type) 
+	{
+		super(type);
+		setLayout(new BorderLayout());
+		
+	}
+	public JTable setTableauClients(Object[][] donnees, Object[] enTete) 
+	{
+		JTable tableClient = new JTable (donnees, enTete);
+		JScrollPane pane = new JScrollPane(tableClient);
+		add(pane, BorderLayout.CENTER);
+		return tableClient;
 	}
 	
-	public ClientelePanel() 
+	public JTable setTableauHistorique(Object[][] donnees, Object[] enTete)
 	{
-		super();
-		m_mainPanel.setLayout(new FlowLayout(FlowLayout.LEADING, LONGUEUR / 8, 20));
-		m_mainPanel.setPreferredSize(new Dimension(LONGUEUR, LARGEUR));
-		
-		construireChampsTextes();
-		construireReservationsBouton();
-		
-		m_mainPanel.add(m_textes.get(CHAMPS_CLIENTELE.RECHERCHE.ordinal()));
-		m_mainPanel.add(m_boutons.get(CHAMPS_CLIENTELE.RECHERCHE.ordinal()));
-		
-		m_mainPanel.add(m_textes.get(CHAMPS_CLIENTELE.SERVICE_CLIENT.ordinal()));
-		m_mainPanel.add(m_boutons.get(CHAMPS_CLIENTELE.SERVICE_CLIENT.ordinal()));
-		
-		m_mainPanel.add(m_textes.get(CHAMPS_CLIENTELE.HOTEL.ordinal()));
-		m_mainPanel.add(m_boutons.get(CHAMPS_CLIENTELE.HOTEL.ordinal()));
-		
-	}
-
-	private void construireReservationsBouton() {
-		JButton boutonRecherche = new JButton("Afficher");
-		boutonRecherche.setPreferredSize(new Dimension(85, 20));
-		m_boutons.add(boutonRecherche);
-		
-		JButton boutonService = new JButton("Ajouter");
-		boutonService.setPreferredSize(new Dimension(75, 20));
-		m_boutons.add(boutonService);	
-		
-		JButton boutonPresents = new JButton("Afficher");
-		boutonPresents.setPreferredSize(new Dimension(85, 20));
-		m_boutons.add(boutonPresents);
-	}
-
-	private void construireChampsTextes() {
-		m_textes.add(new JTextField("ID Recherche"));
-		m_textes.add(new JTextField("ID Service"));
-		m_textes.add(new JTextField("ID Hotel"));
-		for (JTextField texte : m_textes)
-		{
-			texte.addMouseListener(new MouseListener() {
-				private boolean cliqued = false;
-				@Override
-				public void mousePressed(MouseEvent arg0) {
-					if (!cliqued)
-					{
-						((JTextField) arg0.getSource()).setText("");
-						cliqued = true;
-					}
-				}
-
-				@Override
-				public void mouseReleased(MouseEvent arg0) {
-					// TODO Auto-generated method stub
-					
-				}
-				@Override
-				public void mouseEntered(MouseEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-				@Override
-				public void mouseExited(MouseEvent e) {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					if (!cliqued)
-					{
-						((JTextField) e.getSource()).setText("");
-					}
-				}
-			} );
-			texte.setColumns(18);
-		}
-	}
-	
-	public void setTableauHistorique(Object[][] donnees, Object[] enTete)
-	{
-		JFrame historiqueFacture = new JFrame ("Historique Client");
-		historiqueFacture.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-		historiqueFacture.add(new JScrollPane(new JTable(donnees, enTete)), BorderLayout.CENTER);
-		historiqueFacture.setVisible(true);
-		historiqueFacture.pack();	
+		JFrame historiqueClient = new JFrame ("Historique Client");
+		historiqueClient.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+		JTable table = new JTable(donnees, enTete);
+		JButton envoyerPub = new JButton("Pub");
+		m_boutons.add(envoyerPub);
+		historiqueClient.add(envoyerPub, BorderLayout.SOUTH);
+		historiqueClient.add(new JScrollPane(table), BorderLayout.CENTER);
+		historiqueClient.setVisible(true);
+		historiqueClient.pack();
+		return table;
 	}
 	
 	public JTable setTableauReservations(Object[][] donnees, Object[] enTete)
@@ -123,14 +54,6 @@ public class ClientelePanel extends HotelPanel{
 		return table;
 	}
 	
-	public void setTableauClients(Object[][] donnees, Object[] enTete)
-	{
-		JFrame clientsPresents = new JFrame ("Clients Presents");
-		clientsPresents.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-		clientsPresents.add(new JScrollPane(new JTable(donnees, enTete)), BorderLayout.CENTER);
-		clientsPresents.setVisible(true);
-		clientsPresents.pack();	
-	}
 	public JButton setChoixService(ArrayList <String> services)
 	{
 		JFrame choixService = new JFrame ("Choix du service");

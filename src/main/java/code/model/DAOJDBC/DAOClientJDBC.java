@@ -143,7 +143,7 @@ public class DAOClientJDBC implements DAOClient {
             try {
                 String getInfosClientsQuery = "SELECT DISTINCT C.*, R.* FROM Client C JOIN Reservation R ON C.num_cl = R.num_cl";
                 getInfosClientsQuery += " JOIN ReservationChambre RC ON R.num_r = RC.num_r WHERE num_h = ?";
-                getInfosClientsQuery += " AND R.dateAr_r < CURDATE() AND R.dateDep_r > CURDATE()";
+                getInfosClientsQuery += " AND R.dateAr_r < CURDATE() AND R.dateDep_r > CURDATE()" /*AND R.etat_r = 'CONFIRMATION' ??? */;
                 PreparedStatement ps = connection.prepareStatement(getInfosClientsQuery);
                 ps.setInt(1, numHotel);
                 ResultSet resultSet = ps.executeQuery();

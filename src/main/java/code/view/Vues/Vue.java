@@ -1,5 +1,6 @@
 package code.view.Vues;
 
+import java.awt.CardLayout;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -11,7 +12,6 @@ import code.view.Panels.AccueilPanel;
 import code.view.Panels.ClientelePanel;
 import code.view.Panels.ConnectionPanel;
 import code.view.Panels.FacturationPanel;
-import code.view.Panels.HotelPanel;
 import code.view.Panels.ReservationPanel;
 import code.view.Panels.SupremePanel;
 
@@ -20,12 +20,12 @@ public class Vue extends JFrame {
 	
 	public enum MENU_ITEM { DECONNECTION, RETOUR } ;
 	private ArrayList <JMenuItem> m_menuItems = new ArrayList <JMenuItem> ();
-	private ArrayList <HotelPanel> m_panels = new ArrayList <HotelPanel> ();
 	private JMenu m_menu;
 	
 	
 	public Vue ()
 	{
+		setLayout(new CardLayout());
 		construirePanels();
 		construireMenuBarre();
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -34,12 +34,12 @@ public class Vue extends JFrame {
 
 	private void construirePanels ()
 	{
-		m_panels.add(new ConnectionPanel());
-		m_panels.add(new AccueilPanel());
-		m_panels.add(new ClientelePanel());
-		m_panels.add(new FacturationPanel());
-		m_panels.add(new ReservationPanel());
-		m_panels.add(new SupremePanel());
+		add(new ConnectionPanel("Connection"), "Connection");
+		add(new AccueilPanel("Accueil"), "Accueil");
+		add(new ClientelePanel("Clientele"), "Clientele");
+		add(new FacturationPanel("Facturation"), "Facturation");
+		add(new ReservationPanel("Reservation"), "Reservation");
+		add(new SupremePanel("Supreme"), "Supreme");
 	}
 	
 	private void construireMenuBarre()
@@ -56,15 +56,11 @@ public class Vue extends JFrame {
 		setJMenuBar(barre);
 	}
 	
-	public ArrayList <HotelPanel> getPanels()
-	{
-		return m_panels;
-	}
-	
 	public ArrayList <JMenuItem> getMenuItem()
 	{
 		return m_menuItems;
 	}
+
 	
 	public JMenu getMenu()
 	{

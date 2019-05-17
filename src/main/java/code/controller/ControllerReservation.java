@@ -1,12 +1,15 @@
 package code.controller;
 
+import code.view.Panels.ReservationPanel;
 import code.view.Vues.Vue;
 
 public class ControllerReservation extends AbstractController {
 
-	public ControllerReservation(Vue vue) {
-		super(vue);
-		// TODO Auto-generated constructor stub
+	private ReservationPanel m_panel;
+	public ControllerReservation(ReservationPanel panel) {
+		super();
+		m_panel = panel;
+		
 	}
 
 	@Override

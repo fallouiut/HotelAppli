@@ -8,10 +8,10 @@ import javax.swing.JButton;
 
 public class AccueilPanel extends HotelPanel {
 	
-	public AccueilPanel() {
-		super();	
-		m_mainPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 50, 50));
-		m_mainPanel.setPreferredSize(new Dimension(LONGUEUR, LARGEUR));
+	public AccueilPanel(String type) {
+		super(type);	
+		setLayout(new FlowLayout(FlowLayout.LEADING, 50, 50));
+		setPreferredSize(new Dimension(LONGUEUR, LARGEUR));
 	}
 	
 	public void construireBoutons(ArrayList<String> nomBoutons)
@@ -21,7 +21,7 @@ public class AccueilPanel extends HotelPanel {
 			JButton bouton = new JButton(nomBouton);
 			bouton.setEnabled(false);
 			m_boutons.add(bouton);
-			m_mainPanel.add(bouton);
+			add(bouton);
 		}
 	}
 	

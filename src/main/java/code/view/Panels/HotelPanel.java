@@ -1,7 +1,6 @@
 package code.view.Panels;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -20,16 +19,11 @@ public abstract class HotelPanel extends JPanel {
 	protected final int LARGEUR = 300;
 	
 	
-	public HotelPanel ()
+	public HotelPanel (String type)
 	{
-		setPreferredSize(new Dimension(LONGUEUR, LARGEUR));
+		setName(type);
 		setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
-		setLayout(new BorderLayout());
-		m_mainPanel = new JPanel();
-		add(m_mainPanel, BorderLayout.CENTER);
 	}
-	
-	public abstract boolean fonctionne();
 	
 	public void setTermine(final boolean termine)
 	{
@@ -44,5 +38,10 @@ public abstract class HotelPanel extends JPanel {
 	public ArrayList <JTextField> getTextes()
 	{
 		return m_textes;
+	}
+	
+	public boolean fonctionne()
+	{
+		return !m_termine;
 	}
 }

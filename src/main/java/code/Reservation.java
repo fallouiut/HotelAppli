@@ -14,8 +14,8 @@ public class Reservation {
     private float reduction;
 
     private Client client;
-    private List<Chambre> chambres = new ArrayList<Chambre>();
-    private List<TypeService> services = new ArrayList<TypeService>();
+    private List<Chambre> chambres = new ArrayList<>();
+    private List<TypeService> services = new ArrayList<>();
     private Hotel hotel;
 
     public Reservation(int numReservation, LocalDate dateArrivee, LocalDate dateDepart, int nbPersonnes, String etat, float prixTotal, float reduction, Client client, List<Chambre> chambres, List<TypeService> services) {
@@ -130,11 +130,13 @@ public class Reservation {
                 ", dateArrivee=" + dateArrivee +
                 ", dateDepart=" + dateDepart +
                 ", nbPersonnes=" + nbPersonnes +
-                ", etat='" + etat  +
+                ", etat='" + etat + '\'' +
                 ", prixTotal=" + prixTotal +
-                ", reduction=" + reduction + "\n" +
-                //", client=" + client.toString() + "\n" +
-                //", chambres=" + chambres.toString() +
+                ", reduction=" + reduction +
+                ", client=" + client +
+                ", chambres=" + chambres +
+                ", services=" + services +
+                ", hotel=" + hotel +
                 '}';
     }
 }

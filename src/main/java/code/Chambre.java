@@ -9,7 +9,7 @@ public class Chambre {
     private int numHotel;
     private EtatChambre etat;
     private String type;
-    private Set<Option> options = new HashSet<Option>();
+    private Set<Option> options = new HashSet<>();
 
     private int nombreLits;
     private float prix;
