@@ -44,6 +44,7 @@ public class ControllerClientele extends AbstractController {
 	private void afficherClientsPresents() {
 
 
+		//TODO : remplacer plus tard par .get(0), là c'est juste pour test
 		Map<Client, Reservation> clientsPresents = daoClient.findByHotel(admin.getHotelsGeres().get(6));
 		Object[][] donnees = new Object[clientsPresents.size()][12];
 		System.out.println(clientsPresents);

@@ -59,4 +59,8 @@ public class ChambreTest {
         System.out.println(new DAOChambreJDBC().deleteHistoriqueChambre(chambre) ?  "true": "false");
     }
 
+    @Test
+    public void testGetMaxNumChambre() {
+        System.out.println(daoChambreJDBC.getMaxNumChambre(12, 1));
+    }
 }
