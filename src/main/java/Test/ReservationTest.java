@@ -85,6 +85,7 @@ public class ReservationTest {
     }
 
     public static void insertLiens() {
+        System.out.println("test");
         Reservation reservation = new DAOReservationJDBC().getById(2);
         Chambre c = new DAOChambreJDBC().getById(new Pair<>(1, 101));
 
