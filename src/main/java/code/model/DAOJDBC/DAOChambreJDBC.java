@@ -303,4 +303,25 @@ public class DAOChambreJDBC implements DAOChambre {
         }
        return null;
     }
+
+    @Override
+    public Integer getMaxNumChambre(Integer numHotel, Integer etage) {
+        if (numHotel != null && etage != null) {
+            String queryGetMaxNumChambre = "SELECT * FROM `Chambre` WHERE num_c IN (SELECT MAX(num_c) FROM Chambre WHERE num_h = ? AND num_c LIKE ?)";
+            try {
+                PreparedStatement ps = connection.prepareStatement(queryGetMaxNumChambre);
+                ps.setInt(1, numHotel);
+                ps.setString(2, etage + "%");
+
+                ResultSet resultSet = ps.executeQuery();
+                if (resultSet.next()) {
+                    return resultSet.getInt("num_c");
+                }
+            } catch (SQLException sqle) {
+                System.err.println("DAOChambreJDBC.getMaxNumChambre");
+                sqle.printStackTrace();
+            }
+        }
+        return null;
+    }
 }
