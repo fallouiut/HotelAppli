@@ -18,9 +18,9 @@ public interface DAOReservation extends DAO<Reservation, Integer> {
     public List<Reservation> getByHotel(Integer numHotel);
 
     public List<TypeService> getTypeServices(Integer integer);
-    public boolean deleteLiensTypeService(Integer numReservation, TypeService typeService);
-    public boolean insertLiensTypeService(Integer numReservation, TypeService typeService);
-    public boolean updateLiensTypeService(Integer numReservation, List<TypeService> services);
+    public boolean deleteLiensTypeService(Integer numReservation, String typeService);
+    public boolean insertLiensTypeService(Integer numReservation, String typeService);
+    public boolean updateLiensTypeService(Integer numReservation, List<String> services);
 
     public List<Reservation> findByEtat(Integer numHotel, String etat);
     public boolean updateEtatReservation(Integer numReservation, String etat);

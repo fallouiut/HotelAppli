@@ -85,6 +85,7 @@ public class ReservationTest {
     }
 
     public static void insertLiens() {
+        System.out.println("test");
         Reservation reservation = new DAOReservationJDBC().getById(2);
         Chambre c = new DAOChambreJDBC().getById(new Pair<>(1, 101));
 
@@ -152,7 +153,7 @@ public class ReservationTest {
         List<Reservation> reservations = new DAOReservationJDBC().findByEtat(13, "CONFIRMATION");
         System.out.println(reservations);
         List<TypeService> services = new DAOTypeServiceJDBC().findAll();
-        System.out.println(new DAOReservationJDBC().updateLiensTypeService(reservations.get(0).getNumReservation(), services));
+        //System.out.println(new DAOReservationJDBC().updateLiensTypeService(reservations.get(0).getNumReservation(), services));
     }
 
     public static void testFindHistoriqueClient() {
