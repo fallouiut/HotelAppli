@@ -1,5 +1,4 @@
 package code.controller;
-import code.view.Vues.Vue;
 
 public abstract class AbstractController {
 	
