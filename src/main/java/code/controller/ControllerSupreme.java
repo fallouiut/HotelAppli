@@ -1,14 +1,9 @@
 package code.controller;
 
-import java.awt.CardLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -43,21 +38,13 @@ public class ControllerSupreme extends AbstractController {
 		JButton etatHotelBouton = m_panel.getBoutons().get(BOUTONS_SUPREME.ETAT_HOTEL.ordinal());
 		etatHotelBouton.addActionListener(e -> fenetreEtat());
 		JButton compteRenduBouton = m_panel.getBoutons().get(BOUTONS_SUPREME.COMPTE_RENDU.ordinal());
-		compteRenduBouton.addActionListener(e -> fenetreCompteRendu());
-		
+		compteRenduBouton.addActionListener(e -> fenetreCompteRendu());	
 	}
 
-	// Recuperer la liste des services ici pour construire le formulaire d'ajout d'hotel
-	// Recuperer la liste des types de chambre ici pour construire le formulaire d'ajout d'hotel
-	private void afficherFormulaireHotel() {
-		List<TypeService> services = daoTypeService.findAll();
-		List<String> nomServices = new ArrayList<>();
-		for (TypeService service : services) {
-			nomServices.add(service.getNom());
-		}
-		m_panel.setFormulaireHotel(nomServices, daoChambre.getTypesChambres());
+	private void enregistrerFormulaire() {
+		if (!m_panel.finirFormulaire())
+			return;
 		Formulaire formulaireHotel = m_panel.getFormulaire();
-		while (formulaireHotel == null || !formulaireHotel.m_rempli);
 		// Utiliser les getters sur formulaireHotel pour récuperer les infos.
 		String nom = formulaireHotel.getNom();
 		String adresse = formulaireHotel.getAdresse();
@@ -67,9 +54,6 @@ public class ControllerSupreme extends AbstractController {
 
 		List <String> servicesChoisis = formulaireHotel.getServicesChoisis();
 		List <List <String>> chambres = formulaireHotel.getChambresAjoutees();
-
-
-
 		// Ici ajouter hotel et chambres
 		Hotel newHotel = new Hotel();
 		newHotel.setNom(nom);
@@ -98,6 +82,20 @@ public class ControllerSupreme extends AbstractController {
 			newChambre.setType(typeChambre);
 			daoChambre.insert(newChambre);
 		}
+	}
+
+	// Recuperer la liste des services ici pour construire le formulaire d'ajout d'hotel
+	// Recuperer la liste des types de chambre ici pour construire le formulaire d'ajout d'hotel
+	private void afficherFormulaireHotel() {
+		List<TypeService> services = daoTypeService.findAll();
+		List<String> nomServices = new ArrayList<>();
+		for (TypeService service : services) {
+			nomServices.add(service.getNom());
+		}
+		m_panel.setFormulaireHotel(nomServices, daoChambre.getTypesChambres());
+		JButton confirmerFormulaireBouton = m_panel.getBoutons().get(BOUTONS_SUPREME.CONFIRMER_FORMULAIRE.ordinal());
+		confirmerFormulaireBouton.addActionListener(e -> enregistrerFormulaire());
+		
 	}
 
 	// Requete de recuperation des hotels à faire

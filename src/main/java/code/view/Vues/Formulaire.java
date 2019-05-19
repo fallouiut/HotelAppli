@@ -21,6 +21,7 @@ public class Formulaire extends JFrame {
 	public boolean m_rempli = false;
 	private ArrayList <String> m_typesChambre;
 	private JButton m_validerBouton;
+	private JButton m_confirmerFormulaireBouton;
 	private JPanel m_panelCentral;
 	
 	private ArrayList <JTextField> m_fieldsFormulaire = new ArrayList <JTextField> ();
@@ -45,6 +46,8 @@ public class Formulaire extends JFrame {
 		m_panelCentral = new JPanel(new GridLayout(0, 2));
 		m_validerBouton = new JButton("Continuer");
 		m_validerBouton.addActionListener(e -> continuerFormulaire());
+		m_confirmerFormulaireBouton = new JButton("Valider");
+		m_confirmerFormulaireBouton.addActionListener(e -> validerAjoutChambre());
 		setLayout(new BorderLayout());
 		add(m_panelCentral, BorderLayout.CENTER);
 		add(m_validerBouton, BorderLayout.SOUTH);
@@ -74,10 +77,7 @@ public class Formulaire extends JFrame {
 		setAjoutChambres(m_typesChambre);
 		add(m_panelCentral, BorderLayout.CENTER);
 		remove(m_validerBouton);
-		m_validerBouton = new JButton("Valider");
-		m_validerBouton.addActionListener(e -> validerAjoutChambre());
-		remove(m_validerBouton);
-		add(m_validerBouton, BorderLayout.SOUTH);
+		add(m_confirmerFormulaireBouton, BorderLayout.SOUTH);
 		m_panelCentral.revalidate();
 		m_panelCentral.repaint();
 		setVisible(true);
@@ -87,22 +87,13 @@ public class Formulaire extends JFrame {
 	private void validerAjoutChambre() 
 	{
 		ArrayList <String> chambre;
-		for (int i = 0; i < m_nombreChambresCombo.getSelectedIndex(); i++)
+		for (int i = 0; i < m_nombreChambresCombo.getSelectedIndex() + 1; i++)
 		{
 			chambre = new ArrayList <String> ();
 			chambre.add(m_fieldsFormulaire.get(CHAMPS_FORMULAIRE.NUM_ETAGE.ordinal()).getText());
+			chambre.add(Integer.toString(m_typeChambreCombo.getSelectedIndex()));
 			m_chambresAjoutees.add(chambre);
 			System.out.println(chambre.toString());
-		}
-		int continuer = JOptionPane.showConfirmDialog(
-			    m_panelCentral,
-			    "Voulez-vous ajouter d'autre chambres ?",
-			    "Ajout Chambres",
-			    JOptionPane.YES_NO_OPTION);
-		if (continuer != JOptionPane.YES_OPTION)
-		{
-			m_rempli = true;
-			this.dispose();
 		}
 	}
 
@@ -219,7 +210,7 @@ public class Formulaire extends JFrame {
 		m_panelCentral.add(LNbrChambres);
 		m_panelCentral.add(m_nombreChambresCombo);
 	}
-
+	
 	public ArrayList<JTextField> getFieldsFormulaire() {
 		return m_fieldsFormulaire;
 	}
@@ -253,6 +244,11 @@ public class Formulaire extends JFrame {
 	public String getVille()
 	{
 		return m_ville;
+	}
+	
+	public JButton getConfirmerBouton()
+	{
+		return m_confirmerFormulaireBouton;
 	}
 
 

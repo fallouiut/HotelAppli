@@ -11,6 +11,7 @@ import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -20,8 +21,9 @@ import code.view.Vues.Formulaire;
 
 public class SupremePanel extends HotelPanel {
 
-	public enum BOUTONS_SUPREME { AJOUTER, ETAT_HOTEL, COMPTE_RENDU };
+	public enum BOUTONS_SUPREME { AJOUTER, ETAT_HOTEL, COMPTE_RENDU, CONFIRMER_FORMULAIRE };
 	private Formulaire m_formulaire = null;
+	private boolean m_formulaireFini = false;
 	
 	public SupremePanel(String type)
 	{
@@ -73,6 +75,22 @@ public class SupremePanel extends HotelPanel {
 	
 	public void setFormulaireHotel(List<String> services, List <String> typesChambre) {
 		m_formulaire = new Formulaire(services, typesChambre);
+		m_boutons.add(m_formulaire.getConfirmerBouton());
+	}
+	
+	public boolean finirFormulaire()
+	{
+		int continuer = JOptionPane.showConfirmDialog(
+			    m_formulaire,
+			    "Voulez-vous ajouter d'autre chambres ?",
+			    "Ajout Chambres",
+			    JOptionPane.YES_NO_OPTION);
+		if (continuer != JOptionPane.YES_OPTION)
+		{
+			m_formulaireFini = true;
+			m_formulaire.dispose();
+		}
+		return m_formulaireFini;
 	}
 	
 	public Formulaire getFormulaire()
