@@ -12,6 +12,7 @@ public class Reservation {
     private float prixTotal;
     private float reduction;
 
+
     private Client client;
     private List<Chambre> chambres = new ArrayList<>();
     private List<TypeService> services = new ArrayList<>();
@@ -128,7 +129,7 @@ public class Reservation {
         this.services = services;
     }
 
-    public void getDetailFacture(FacturationVisitor facturationVisitor){
+    public void getDetailFacture(FacturationVisitor facturationVisitor, Reduction calculateurReduction){
         // prix chambre
         for(Chambre chambre: this.chambres) {
             facturationVisitor.visit(chambre);
@@ -144,9 +145,14 @@ public class Reservation {
             facturationVisitor.visit(typeService);
         }
 
-        // reduction
-        facturationVisitor.visit(this);
         // prix total
+        // prix sans reduction
+        this.prixTotal = facturationVisitor.getPrixTotal();
+        // calcul reduction
+        calculateurReduction.calculer(this);
+        facturationVisitor.visit(this);
+
+        // prix avec reduction
         this.prixTotal = facturationVisitor.getPrixTotal();
         this.facture = facturationVisitor.getDetails();
     }

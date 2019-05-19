@@ -90,7 +90,7 @@ public class ControllerFacturation extends AbstractController {
 
             public void detailFacture() {
                 currentReservation = daoReservation.getById(numReservation);
-                currentReservation.getDetailFacture(new SimpleFacturationVisitor());
+                currentReservation.getDetailFacture(new SimpleFacturationVisitor(), new ReductionAnciennete());
 
                 enteteFacure = new String[]{"Type", "Prix"};
                 donneesFacture = new String[currentReservation.getFacture().size() + 2][enteteFacure.length];
