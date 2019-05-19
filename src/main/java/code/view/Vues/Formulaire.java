@@ -17,8 +17,7 @@ import javax.swing.JTextField;
 
 public class Formulaire extends JFrame {
 	
-	public enum CHAMPS_FORMULAIRE { NOM, ADRESSE, COORD } ;
-	public enum CHAMPS_CHAMBRE { NUM_ETAGE, NBR_LITS } ;
+	public enum CHAMPS_FORMULAIRE { NOM, ADRESSE, COORD_LONGI, COORD_LATITUDE, VILLE, NUM_ETAGE } ;
 	public boolean m_rempli = false;
 	private ArrayList <String> m_typesChambre;
 	private JButton m_validerBouton;
@@ -28,11 +27,12 @@ public class Formulaire extends JFrame {
 	private ArrayList <JCheckBox> m_checkBoxesFormulaire = new ArrayList <JCheckBox> ();
 	private JComboBox <String> m_typeChambreCombo;
 	private JComboBox <Integer> m_nombreChambresCombo;
-	private ArrayList <JTextField> m_fieldsChambre = new ArrayList <JTextField> ();
 	
 	private String m_nom;
 	private String m_adresse;
-	private String m_coord;
+	private String m_coordLongi;
+	private String m_coordLati;
+	private String m_ville;
 	private List <String> m_servicesChoisis = new ArrayList <String> ();
 	private List <List <String>> m_chambresAjoutees = new ArrayList <List <String>> ();
 	
@@ -64,7 +64,9 @@ public class Formulaire extends JFrame {
 		}		
 		m_nom = m_fieldsFormulaire.get(CHAMPS_FORMULAIRE.NOM.ordinal()).getText();
 		m_adresse = m_fieldsFormulaire.get(CHAMPS_FORMULAIRE.ADRESSE.ordinal()).getText();
-		m_coord = m_fieldsFormulaire.get(CHAMPS_FORMULAIRE.COORD.ordinal()).getText();
+		m_coordLongi = m_fieldsFormulaire.get(CHAMPS_FORMULAIRE.COORD_LONGI.ordinal()).getText();
+		m_coordLati = m_fieldsFormulaire.get(CHAMPS_FORMULAIRE.COORD_LATITUDE.ordinal()).getText();
+		m_ville = m_fieldsFormulaire.get(CHAMPS_FORMULAIRE.VILLE.ordinal()).getText();
 		
 		setVisible(false);
 		remove(m_panelCentral);
@@ -88,9 +90,7 @@ public class Formulaire extends JFrame {
 		for (int i = 0; i < m_nombreChambresCombo.getSelectedIndex(); i++)
 		{
 			chambre = new ArrayList <String> ();
-			chambre.add(m_fieldsChambre.get(CHAMPS_CHAMBRE.NUM_ETAGE.ordinal()).getText());
-			chambre.add(Integer.toString(m_typeChambreCombo.getSelectedIndex()));
-			chambre.add(m_fieldsChambre.get(CHAMPS_CHAMBRE.NBR_LITS.ordinal()).getText());
+			chambre.add(m_fieldsFormulaire.get(CHAMPS_FORMULAIRE.NUM_ETAGE.ordinal()).getText());
 			m_chambresAjoutees.add(chambre);
 			System.out.println(chambre.toString());
 		}
@@ -133,29 +133,42 @@ public class Formulaire extends JFrame {
 
 	private void setChampsHotel()
 	{
-		JLabel LNom, LAdresse, LCoord;
+		JLabel LNom, LAdresse, LLat, LLong, LVille;
         LNom = new JLabel("Nom");
         LAdresse = new JLabel("Adresse");
-        LCoord = new JLabel("Coordonnées");
+        LLong = new JLabel("Longitude");
+        LLat = new JLabel("Latitude");
+        LVille = new JLabel("Ville");
         
-        JTextField TNom, TAdresse, TCoord;
+ 
+        
+        JTextField TNom, TAdresse, TLong, TLat, TVille;
         TNom = new JTextField();
         TNom.setPreferredSize(new Dimension(200, 15));
         m_fieldsFormulaire.add(TNom);
         TAdresse = new JTextField();
         TAdresse.setPreferredSize(new Dimension(200, 15));
         m_fieldsFormulaire.add(TAdresse);
-        TCoord = new JTextField();
-        TCoord.setPreferredSize(new Dimension(200, 15));
-        m_fieldsFormulaire.add(TCoord);
+        TLong = new JTextField();
+        TLong.setPreferredSize(new Dimension(200, 15));
+        m_fieldsFormulaire.add(TLong);
+        TLat = new JTextField();
+        TLat.setPreferredSize(new Dimension(200, 15));
+        m_fieldsFormulaire.add(TLat);
+        TVille = new JTextField();
+        TVille.setPreferredSize(new Dimension(200, 15));
+        m_fieldsFormulaire.add(TVille);
         
         m_panelCentral.add(LNom);
         m_panelCentral.add(TNom);
         m_panelCentral.add(LAdresse);
         m_panelCentral.add(TAdresse);
-        m_panelCentral.add(LCoord);
-        m_panelCentral.add(TCoord);
-        
+        m_panelCentral.add(LLong);
+        m_panelCentral.add(TLong);     
+        m_panelCentral.add(LLat);
+        m_panelCentral.add(TLat);
+        m_panelCentral.add(LVille);
+        m_panelCentral.add(TVille);   
 	}
 
 	private void setServicesHotel(List<String> services)
@@ -182,16 +195,15 @@ public class Formulaire extends JFrame {
 	
 	private void setAjoutChambres(List <String> typesChambre)
 	{
-		JLabel LNumEtage, LTypeChambre, LNbrLits, LNbrChambres;
+		JLabel LNumEtage, LTypeChambre, LNbrChambres;
 		LNumEtage = new JLabel("Numero Etage");
         LTypeChambre = new JLabel("Type de chambre");
-        LNbrLits = new JLabel("Nombre de lits");
         LNbrChambres = new JLabel("Nombre de chambres");
 
         
 		JTextField numEtageField = new JTextField();
 		numEtageField.setPreferredSize(new Dimension(200, 20));
-		m_fieldsChambre.add(numEtageField);
+		m_fieldsFormulaire.add(numEtageField);
 		m_panelCentral.add(LNumEtage);
 		m_panelCentral.add(numEtageField);
 		
@@ -200,12 +212,6 @@ public class Formulaire extends JFrame {
 			m_typeChambreCombo.addItem(typeChambre);
 		m_panelCentral.add(LTypeChambre);
 		m_panelCentral.add(m_typeChambreCombo);
-		
-		JTextField nombreLitField = new JTextField();
-		nombreLitField.setPreferredSize(new Dimension(50, 20));
-		m_fieldsChambre.add(nombreLitField);
-		m_panelCentral.add(LNbrLits);
-		m_panelCentral.add(nombreLitField);
 		
 		m_nombreChambresCombo = new JComboBox <Integer> ();
 		for (int i = 1; i < 10; i++)
@@ -226,16 +232,27 @@ public class Formulaire extends JFrame {
 		return m_adresse;
 	}
 
-	public String getCoord() {
-		return m_coord;
-	}
-
 	public List<String> getServicesChoisis() {
 		return m_servicesChoisis;
 	}
 
 	public List<List<String>> getChambresAjoutees() {
 		return m_chambresAjoutees;
+	}
+	
+	public String getLatitude()
+	{
+		return m_coordLati;
+	}
+	
+	public String getLongitude()
+	{
+		return m_coordLongi;
+	}
+	
+	public String getVille()
+	{
+		return m_ville;
 	}
 
 
