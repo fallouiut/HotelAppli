@@ -5,6 +5,7 @@ import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 import java.util.*;
 
+import javax.mail.MessagingException;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
@@ -45,7 +46,7 @@ public class ControllerClientele extends AbstractController {
 
 
 		//TODO : remplacer plus tard par .get(0), là c'est juste pour test
-		Map<Client, Reservation> clientsPresents = daoClient.findByHotel(admin.getHotelsGeres().get(6));
+		Map<Client, Reservation> clientsPresents = daoClient.findByHotel(admin.getHotelsGeres().get(4));
 		Object[][] donnees = new Object[clientsPresents.size()][12];
 		System.out.println(clientsPresents);
 		int i = 0;
@@ -92,7 +93,7 @@ public class ControllerClientele extends AbstractController {
 			    options,
 			    options[2]);
 				if (decision == 0)
-					montrerHistorique(numClient);
+					montrerHistorique(numClient, numReservation);
 				else if (decision == 1)
 				{
 					// recuperer les services disponibles
@@ -111,7 +112,7 @@ public class ControllerClientele extends AbstractController {
 	}
        
 	// recuperer historique ici
-	private void montrerHistorique(Integer numClient)
+	private void montrerHistorique(Integer numClient, Integer numReservation)
 	{
 		System.out.println(numClient);
 		List<Reservation> reservations = daoReservation.findHistoriqueClient(numClient);
@@ -136,7 +137,7 @@ public class ControllerClientele extends AbstractController {
 		String [] enTete = {"Hotel", "Nom", "Prenom", "Entreprise", "Num reservation", "Date Debut", "Date Fin", "Nb personnes", "Etat", "Prix total", "Reduction", "Facture"};
 		m_panel.setTableauHistorique(donnees, enTete);
 		JButton boutonPub = m_panel.getBoutons().get(0);
-		boutonPub.addActionListener(e -> envoyerPub());
+		boutonPub.addActionListener(e -> envoyerPub(numClient, numReservation));
 	}
 	// ajouter service ici
 	private void ajouterServiceClient(Integer numReservation) {
@@ -150,7 +151,18 @@ public class ControllerClientele extends AbstractController {
 		daoReservation.updateLiensTypeService(numReservation, servicesAjoutes);
 	}
 
-	private void envoyerPub() {
+	private void envoyerPub(Integer numClient, Integer numReservation) {
+		Client client = daoClient.getById(numClient);
+		Email email = new Email("Profitez de nos hôtels de grande renommée", client);
+		Hotel hotel = daoHotel.getByReservation(numReservation);
+		//Hotel hotelLePlusProche = daoHotel.getHotelLePlusProche(hotel.getNumHotel(), hotel.getLongitude(), hotel.getLatitude());
+		Hotel hotelLePlusProche = daoHotel.getById(11);
+		try {
+			email.publicite(hotelLePlusProche);
+		} catch (MessagingException mee) {
+			System.err.println("ControllerClientele.envoyerPub");
+			mee.printStackTrace();
+		}
 		JOptionPane.showMessageDialog(m_panel, "Publicité envoyée !", "Publicité", JOptionPane.INFORMATION_MESSAGE);
 	}
 

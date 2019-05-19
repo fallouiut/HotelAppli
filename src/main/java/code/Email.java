@@ -1,4 +1,10 @@
 package code;
+import code.model.DAOInterfaces.DAOChambre;
+import code.model.DAOInterfaces.DAOHotel;
+import code.model.DAOJDBC.DAOChambreJDBC;
+import code.model.DAOJDBC.DAOHotelJDBC;
+
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -91,6 +97,52 @@ public class Email {
 
         System.out.println(message);
 
+        createEmailMessage();
+        sendEmail();
+
+    }
+
+    public void publicite(Hotel hotelPub) throws MessagingException {
+        DAOHotel daoHotel = new DAOHotelJDBC();
+        DAOChambre daoChambre = new DAOChambreJDBC();
+        this.message += ("Bonjour " + this.client.getPrenom() + " " + this.client.getNom().toUpperCase());
+        this.message += ("<br/>Merci d'avoir réservé dans l'un de nos hôtels.");
+        this.message += ("<br/>Découvrez l'hôtel " + hotelPub.getNom() + ", situé dans la ville de " + hotelPub.getVille());
+        this.message += ("<br/><div style=\"color: blue\">*------------------------------ HOTEL " + hotelPub.getNom() + " ------------------------------*</div>");
+
+        List<TypeService> services = daoHotel.getServicesById(hotelPub.getNumHotel());
+        if (services.size() > 0) {
+            this.message += "<br/><br/>Proposant ces services : <br/>";
+            for (TypeService service : services) {
+                this.message += " - " + service.getNom() + " au prix de : " + service.getPrix() + " euros.<br/>";
+            }
+            this.message += "<br/>";
+        }
+
+        List<String> typesChambres = daoChambre.getTypesChambres();
+        this.message += "Un hôtel de " + daoHotel.getNbChambres(hotelPub.getNumHotel()) + " chambres :";
+
+        this.message += "<br/><br/>";
+        for (String type : typesChambres) {
+            this.message += daoChambre.getNbChambresParType(hotelPub.getNumHotel(), type) + " chambres de type " + type + " :<br/> ";
+            for (Chambre chambre : hotelPub.getChambres()) {
+                if (chambre.getType().equals(type)) {
+                    this.message += " - Chambre à " + chambre.getPrix() + " euros, avec " + chambre.getNombreLits() + " lits";
+                    if (chambre.getOptions().size() > 0) {
+                        this.message += ", profitez des options suivantes :<br/>";
+                        for (Option option : chambre.getOptions()) {
+                            this.message += "   - " + option.getNom() + " à " + option.getPrix() + " euros<br/>";
+                        }
+                        this.message += "<br/>";
+                        break;
+                    } else {
+                        this.message += ".<br/><br/>";
+                    }
+                }
+            }
+            this.message += "<br/>";
+        }
+        this.message += "Réservez dès à présent sur le site grouphotel.alwaysdata.net !";
         createEmailMessage();
         sendEmail();
 

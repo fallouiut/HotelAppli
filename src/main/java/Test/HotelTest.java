@@ -80,6 +80,11 @@ public class HotelTest {
         assertTrue(daoHotelJDBC.delete(hotel));
     }
 
+    @Test
+    public void testHotelLePlusProche() {
+        System.out.println(daoHotelJDBC.getHotelLePlusProche(1, 5.46568f, 43.512f));
+    }
+
     public static void main(String args[]) {
         Hotel h = daoHotelJDBC.getById(1);
 

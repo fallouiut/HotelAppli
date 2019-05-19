@@ -221,6 +221,75 @@ public class DAOHotelJDBC implements DAOHotel {
     }
 
     @Override
+    public Hotel getByReservation(Integer numReservation) {
+        if (numReservation != null) {
+            String getByReservationQuery = "SELECT DISTINCT H.* FROM Hotel H JOIN ReservationChambre RC ON H.num_h = RC.num_h WHERE num_r = ?";
+            try {
+                PreparedStatement ps = connection.prepareStatement(getByReservationQuery);
+                ps.setInt(1, numReservation);
+                ResultSet resultSet = ps.executeQuery();
+
+                if(resultSet.next()) {
+
+                    Set<Chambre> chambres = getChambresById(resultSet.getInt("num_h"));
+                    List<TypeService> services = getServicesById(numReservation);
+
+                    return new Hotel (
+                            resultSet.getInt("num_h"),
+                            resultSet.getString("nom_h"),
+                            resultSet.getString("ville_h"),
+                            resultSet.getString("adresse_h"),
+                            resultSet.getFloat("latitude_h"),
+                            resultSet.getFloat("longitude_h"),
+                            services,
+                            chambres,
+                            null);
+                }
+            } catch (SQLException sqle) {
+                System.err.println("DAOHotelJDBC.getById");
+                sqle.printStackTrace();
+            }
+
+        }
+        return null;
+    }
+
+    @Override
+    public Hotel getHotelLePlusProche(Integer numHotel, Float longitude, Float latitude) {
+        if (longitude != null && latitude != null) {
+            String getHotelLePlusProcheQuery = "SELECT * FROM Hotel WHERE num_h != ?";
+            try {
+                PreparedStatement ps = connection.prepareStatement(getHotelLePlusProcheQuery);
+                ps.setInt(1, numHotel);
+                ResultSet resultSet = ps.executeQuery();
+
+                Double distanceMin = Double.MAX_VALUE;
+                Integer numHotelLePlusProche = null;
+                while (resultSet.next()) {
+                    Float longitudeTest = resultSet.getFloat("longitude_h");
+                    Float latitudeTest = resultSet.getFloat("latitude_h");
+                    Float ecartLongitude = Math.abs(longitude - longitudeTest);
+                    Float ecartLatitude = Math.abs(latitude - latitudeTest);
+                    double distanceTest = Math.sqrt(Math.pow(ecartLatitude, 2) + Math.pow(ecartLongitude, 2));
+                    System.out.println(resultSet.getString("nom_h"));
+                    System.out.println(distanceTest);
+                    if (distanceMin > distanceTest) {
+                        distanceMin = distanceTest;
+                        numHotelLePlusProche = resultSet.getInt("num_h");
+                    }
+                }
+                if (numHotelLePlusProche != null) {
+                    return getById(numHotelLePlusProche);
+                }
+            } catch (SQLException sqle) {
+                System.err.println("DAOHotelJDBC.getHotelLePlusProche");
+                sqle.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    @Override
     public Hotel insert(Hotel obj) {
         if(obj != null){
             String insertHotelQuery = "INSERT INTO Hotel(nom_h, ville_h, adresse_h, latitude_h, longitude_h) VALUES(?,?,?,?,?)";
@@ -357,6 +426,23 @@ public class DAOHotelJDBC implements DAOHotel {
             }
         } catch (SQLException sqle) {
             System.err.println("DAOHotelJDBC.getNbHotels");
+            sqle.printStackTrace();
+        }
+        return -1;
+    }
+
+    @Override
+    public Integer getNbChambres(Integer numHotel) {
+        try {
+            String getNbChambresQuery = "SELECT COUNT(*) FROM Chambre WHERE num_h = ?";
+            PreparedStatement ps = connection.prepareStatement(getNbChambresQuery);
+            ps.setInt(1, numHotel);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException sqle) {
+            System.err.println("DAOHotelJDBC.getNbChambres");
             sqle.printStackTrace();
         }
         return -1;
