@@ -3,6 +3,7 @@ package code.controller;
 import java.awt.CardLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,12 +13,13 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 
-import code.Client;
-import code.Hotel;
-import code.Reservation;
-import code.TypeService;
+import code.*;
+import code.model.DAOInterfaces.DAOChambre;
 import code.model.DAOInterfaces.DAOHotel;
+import code.model.DAOInterfaces.DAOTypeService;
+import code.model.DAOJDBC.DAOChambreJDBC;
 import code.model.DAOJDBC.DAOHotelJDBC;
+import code.model.DAOJDBC.DAOTypeServiceJDBC;
 import code.view.Panels.SupremePanel;
 import code.view.Panels.SupremePanel.BOUTONS_SUPREME;
 import code.view.Vues.Formulaire;
@@ -25,6 +27,8 @@ import code.view.Vues.Formulaire;
 public class ControllerSupreme extends AbstractController {
 
 	private DAOHotel daoHotel = new DAOHotelJDBC();
+	private DAOTypeService daoTypeService = new DAOTypeServiceJDBC();
+	private DAOChambre daoChambre = new DAOChambreJDBC();
 	SupremePanel m_panel;
 	public ControllerSupreme(SupremePanel panel) {
 		super();
@@ -46,29 +50,52 @@ public class ControllerSupreme extends AbstractController {
 	// Recuperer la liste des services ici pour construire le formulaire d'ajout d'hotel
 	// Recuperer la liste des types de chambre ici pour construire le formulaire d'ajout d'hotel
 	private void afficherFormulaireHotel() {
-		List <String> services = new ArrayList <String> ();
-		services.add("Menage");
-		services.add("Repas");
-		services.add("Wi-Fi");
-		services.add("Cable");
-		List <String> typesChambre = new ArrayList <String> ();
-		typesChambre.add("Simple");
-		typesChambre.add("Double");
-		typesChambre.add("Famille");
-		typesChambre.add("Suite");
-		m_panel.setFormulaireHotel(services, typesChambre);
+		List<TypeService> services = daoTypeService.findAll();
+		List<String> nomServices = new ArrayList<>();
+		for (TypeService service : services) {
+			nomServices.add(service.getNom());
+		}
+		m_panel.setFormulaireHotel(nomServices, daoChambre.getTypesChambres());
 		Formulaire formulaireHotel = m_panel.getFormulaire();
 		while (formulaireHotel == null || !formulaireHotel.m_rempli);
 		// Utiliser les getters sur formulaireHotel pour récuperer les infos.
 		String nom = formulaireHotel.getNom();
 		String adresse = formulaireHotel.getAdresse();
 		String coord = formulaireHotel.getCoord();
-		ArrayList <String> servicesChoisis = formulaireHotel.getServicesChoisis();
-		ArrayList <ArrayList <String>> chambres = formulaireHotel.getChambresAjoutees();
-		// Une chambre => { Num etage, typeChambre, nombre lits }
-		
+
+		List <String> servicesChoisis = formulaireHotel.getServicesChoisis();
+		List <List <String>> chambres = formulaireHotel.getChambresAjoutees();
+
+
+
 		// Ici ajouter hotel et chambres
-		
+		Hotel newHotel = new Hotel();
+		newHotel.setNom(nom);
+		/*newHotel.setVille(ville);*/
+		newHotel.setAdresse(adresse);
+		newHotel.setLongitude(Float.parseFloat(coord));
+		newHotel.setLatitude(Float.parseFloat(coord));
+		newHotel = daoHotel.insert(newHotel);
+
+		List<TypeService> typesServices = new ArrayList<>();
+		for (String service : servicesChoisis) {
+			typesServices.add(daoTypeService.getById(service));
+		}
+
+		daoHotel.insertServices(newHotel.getNumHotel(), typesServices);
+
+		// Une chambre => { Num etage, typeChambre, nombre lits }
+		List<Chambre> newChambres = new ArrayList<>();
+		for (List<String> chambre : chambres) {
+			Integer numEtage = Integer.parseInt(chambre.get(0));
+			Integer numNewChambre = daoChambre.getMaxNumChambre(newHotel.getNumHotel(), numEtage) + 1;
+			String typeChambre = chambre.get(1);
+			Chambre newChambre = new Chambre();
+			newChambre.setNumHotel(newHotel.getNumHotel());
+			newChambre.setNumChambre(numNewChambre);
+			newChambre.setType(typeChambre);
+			daoChambre.insert(newChambre);
+		}
 	}
 
 	// Requete de recuperation des hotels à faire
@@ -127,7 +154,7 @@ public class ControllerSupreme extends AbstractController {
 			}
 			// recuperer les services
 			private void afficherVueSupprimerService(Integer numHotel) {
-				Set<TypeService> servicesHotel = daoHotel.getServicesById(numHotel);
+				List<TypeService> servicesHotel = daoHotel.getServicesById(numHotel);
 				System.out.println(servicesHotel);
 				String[] enTete = {"Service", "Prix"};
 				Object[][] donnees = new Object[servicesHotel.size()][16];

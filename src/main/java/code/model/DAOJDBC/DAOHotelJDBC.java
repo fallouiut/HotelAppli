@@ -101,7 +101,7 @@ public class DAOHotelJDBC implements DAOHotel {
     }
 
     @Override
-    public Set<TypeService> getServicesById(int numHotel) {
+    public List<TypeService> getServicesById(int numHotel) {
 
         String queryGetServices = "SELECT T.* FROM TypeService AS T JOIN Proposer AS P ON T.nom_s = P.nom_s";
         queryGetServices += " WHERE num_h = ?";
@@ -111,7 +111,7 @@ public class DAOHotelJDBC implements DAOHotel {
             ps.setInt(1, numHotel);
             ResultSet resultGetServices = ps.executeQuery();
 
-            Set<TypeService> services = new HashSet<>();
+            List<TypeService> services = new ArrayList<>();
             while(resultGetServices.next()) {
                 services.add(new TypeService(resultGetServices.getString("nom_s"), resultGetServices.getFloat("prix_s")));
             }
@@ -134,7 +134,7 @@ public class DAOHotelJDBC implements DAOHotel {
             while (resultSet.next()) {
 
                 Set<Chambre> chambres = getChambresById(resultSet.getInt("num_h"));
-                Set<TypeService> services = getServicesById(resultSet.getInt("num_h"));
+                List<TypeService> services = getServicesById(resultSet.getInt("num_h"));
 
                 hotels.add(new Hotel (
                         resultSet.getInt("num_h"),
@@ -197,7 +197,7 @@ public class DAOHotelJDBC implements DAOHotel {
                 if(resultSet.next()) {
 
                     Set<Chambre> chambres = getChambresById(resultSet.getInt("num_h"));
-                    Set<TypeService> services = getServicesById(id);
+                    List<TypeService> services = getServicesById(id);
 
                     return new Hotel (
                             resultSet.getInt("num_h"),
@@ -243,12 +243,8 @@ public class DAOHotelJDBC implements DAOHotel {
                 ps.close();
                 if (generatedKeys.next()) {
                     int lastInsertedId = generatedKeys.getInt(1);
-                    insertServices(lastInsertedId, obj.getServices());
-                    for(Chambre chambre : obj.getChambres()) {
-                        //TODO : remplacer par numHotel dans Chambre
-                        chambre.setNumHotel(lastInsertedId);
-                        daoChambreJDBC.insert(chambre);
-                    }
+                    obj.setNumHotel(lastInsertedId);
+
                     return obj;
                 }
 
@@ -304,7 +300,7 @@ public class DAOHotelJDBC implements DAOHotel {
         return true;
     }
 
-    public void insertServices(int numHotel, Set<TypeService> services) {
+    public void insertServices(int numHotel, List<TypeService> services) {
 
         if (services.size() != 0) {
             String insertServicesQuery = "INSERT INTO Proposer(nom_s, num_h) VALUES (?,?)";

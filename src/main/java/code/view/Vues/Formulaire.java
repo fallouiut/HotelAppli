@@ -33,8 +33,8 @@ public class Formulaire extends JFrame {
 	private String m_nom;
 	private String m_adresse;
 	private String m_coord;
-	private ArrayList <String> m_servicesChoisis = new ArrayList <String> ();
-	private ArrayList <ArrayList <String>> m_chambresAjoutees = new ArrayList <ArrayList <String>> ();
+	private List <String> m_servicesChoisis = new ArrayList <String> ();
+	private List <List <String>> m_chambresAjoutees = new ArrayList <List <String>> ();
 	
 	
 	public Formulaire(List<String> services, List <String> typesChambre) 
@@ -230,11 +230,11 @@ public class Formulaire extends JFrame {
 		return m_coord;
 	}
 
-	public ArrayList<String> getServicesChoisis() {
+	public List<String> getServicesChoisis() {
 		return m_servicesChoisis;
 	}
 
-	public ArrayList<ArrayList<String>> getChambresAjoutees() {
+	public List<List<String>> getChambresAjoutees() {
 		return m_chambresAjoutees;
 	}
 

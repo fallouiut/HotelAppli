@@ -8,10 +8,7 @@ import java.util.Map;
 
 import javax.swing.*;
 
-import code.Admin;
-import code.Client;
-import code.Reservation;
-import code.TypeService;
+import code.*;
 import code.model.DAOInterfaces.DAOClient;
 import code.model.DAOInterfaces.DAOHotel;
 import code.model.DAOInterfaces.DAOReservation;
@@ -28,7 +25,7 @@ public class ControllerFacturation extends AbstractController {
 	private DAOReservation daoReservation = new DAOReservationJDBC();
 	private DAOHotel daoHotel = new DAOHotelJDBC();
 	private DAOTypeService daoTypeService = new DAOTypeServiceJDBC();
-	private Admin admin;
+	private Admin admin = SessionUnique.getInstance().getSession();
 
 	private FacturationPanel m_panel;
 	public ControllerFacturation(FacturationPanel facturationPanel) {
@@ -103,7 +100,7 @@ public class ControllerFacturation extends AbstractController {
 
 	private void afficherClientsPresents() {
 
-		Map<Client, Reservation> clientsPresents = daoClient.findByHotel(admin.getHotelsGeres().get(4));
+		Map<Client, Reservation> clientsPresents = daoClient.findByHotel(admin.getHotelsGeres().get(0));
 		Object[][] donnees = new Object[clientsPresents.size()][12];
 		System.out.println(clientsPresents);
 		int i = 0;

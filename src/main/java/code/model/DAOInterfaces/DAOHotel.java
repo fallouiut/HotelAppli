@@ -13,11 +13,11 @@ import java.util.Set;
 public interface DAOHotel extends DAO<Hotel, Integer> {
 
     public int getNbHotels();
-    public Set<TypeService> getServicesById(int numHotel);
+    public List<TypeService> getServicesById(int numHotel);
     public Set<Chambre> getChambresById(int numHotel);
     public boolean deleteServices(Hotel obj);
     public boolean updateServices(Hotel obj);
-    public void insertServices(int numHotel, Set<TypeService> services);
+    public void insertServices(int numHotel, List<TypeService> services);
     public boolean updateChambres(Hotel obj);
     public boolean deleteChambres(Hotel obj);
 

@@ -6,7 +6,6 @@ import code.model.DAOInterfaces.DAOChambre;
 import javafx.util.Pair;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.Date;
 
@@ -16,7 +15,12 @@ import java.util.Date;
 public class DAOChambreJDBC implements DAOChambre {
 
     private static Connection connection = ConnexionUnique.getInstance().getConnection();
-    private Set<String> typesChambres = getTypeChambres();
+    private List<String> typesChambres = findTypesChambres();
+
+    @Override
+    public List<String> getTypesChambres() {
+        return typesChambres;
+    }
 
     @Override
     public boolean deleteHistoriqueChambre(Chambre chambre) {
@@ -219,7 +223,7 @@ public class DAOChambreJDBC implements DAOChambre {
 
     @Override
     public Chambre insert(Chambre obj) {
-        if(obj != null && getTypeChambres().contains(obj.getType())){
+        if(obj != null && getTypesChambres().contains(obj.getType())){
             String insertQuery = "INSERT INTO Chambre(num_h, num_c, nom_t) VALUES(?,?,?)";
             try{
                 PreparedStatement ps = connection.prepareStatement(insertQuery);
@@ -288,8 +292,8 @@ public class DAOChambreJDBC implements DAOChambre {
         return -1;
     }
 
-    public Set<String> getTypeChambres() {
-        Set<String> types = new HashSet<>();
+    public List<String> findTypesChambres() {
+        List<String> types = new ArrayList<>();
         ResultSet rs = null;
         try {
             rs = connection.createStatement().executeQuery("SELECT nom_t FROM TypeChambre");
@@ -298,7 +302,7 @@ public class DAOChambreJDBC implements DAOChambre {
             }
             return types;
         } catch (SQLException sqle) {
-            System.err.println("DAOChambreJDBC.getTypeChambres");
+            System.err.println("DAOChambreJDBC.findTypesChambres");
             sqle.printStackTrace();
         }
        return null;
