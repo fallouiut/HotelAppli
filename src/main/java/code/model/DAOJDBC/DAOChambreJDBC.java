@@ -328,4 +328,24 @@ public class DAOChambreJDBC implements DAOChambre {
         }
         return null;
     }
+
+    @Override
+    public Integer getNbChambresParType(Integer numHotel, String type) {
+        if (numHotel != null && type != null) {
+            String queryGetNbChambresParType = "SELECT COUNT(*) FROM Chambre WHERE num_h = ? AND nom_t = ?";
+            try {
+                PreparedStatement ps = connection.prepareStatement(queryGetNbChambresParType);
+                ps.setInt(1, numHotel);
+                ps.setString(2, type);
+                ResultSet resultSet = ps.executeQuery();
+                if (resultSet.next()) {
+                    return resultSet.getInt(1);
+                }
+            } catch (SQLException sqle) {
+                System.err.println("DAOChambreJDBC.getNbChambresParType");
+                sqle.printStackTrace();
+            }
+        }
+        return null;
+    }
 }

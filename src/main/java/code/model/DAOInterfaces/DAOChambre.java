@@ -26,5 +26,6 @@ public interface DAOChambre extends DAO<Chambre, Pair<Integer, Integer>> {
     public boolean deleteReservationChambre(Chambre chambre);
 
     public Integer getMaxNumChambre(Integer numHotel, Integer etage);
+    public Integer getNbChambresParType(Integer numHotel, String type);
 
 }

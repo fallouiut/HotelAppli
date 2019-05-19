@@ -22,5 +22,8 @@ public interface DAOHotel extends DAO<Hotel, Integer> {
     public boolean deleteChambres(Hotel obj);
 
     public List<Hotel> findAllLight();
+    public Hotel getByReservation(Integer numReservation);
+    public Hotel getHotelLePlusProche(Integer numHotel, Float longitude, Float latitude);
+    public Integer getNbChambres(Integer numHotel);
 
 }
