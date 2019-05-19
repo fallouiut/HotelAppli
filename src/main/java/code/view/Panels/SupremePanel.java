@@ -62,14 +62,25 @@ public class SupremePanel extends HotelPanel {
 		return table;
 	}
 	
-	public JTable setTableauServices(Object[][] donnees, Object[] enTete)
+	public JTable setTableauServicesSupprimer(Object[][] donnees, Object[] enTete)
 	{
-		JFrame historiqueClient = new JFrame ("Services Client");
-		historiqueClient.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+		JFrame tableauService = new JFrame ("Suppresion Services Hotel");
+		tableauService.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		JTable table = new JTable(donnees, enTete);
-		historiqueClient.add(new JScrollPane(table), BorderLayout.CENTER);
-		historiqueClient.setVisible(true);
-		historiqueClient.pack();
+		tableauService.add(new JScrollPane(table), BorderLayout.CENTER);
+		tableauService.setVisible(true);
+		tableauService.pack();
+		return table;
+	}
+	
+	public JTable setTableauServicesAjouter(Object[][] donnees, Object[] enTete)
+	{
+		JFrame tableauService = new JFrame ("Ajouts Services Hotel");
+		tableauService.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+		JTable table = new JTable(donnees, enTete);
+		tableauService.add(new JScrollPane(table), BorderLayout.CENTER);
+		tableauService.setVisible(true);
+		tableauService.pack();
 		return table;
 	}
 	

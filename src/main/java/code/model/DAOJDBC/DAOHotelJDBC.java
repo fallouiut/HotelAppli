@@ -309,11 +309,11 @@ public class DAOHotelJDBC implements DAOHotel {
                 //pas besoin de vérifier que le type service existe bien car lors de la création d'un hotel
                 //on fera un findAll de TypeService qu'on affichera sur l'interface admin
                 ResultSet generatedKeys = ps.getGeneratedKeys();
-                ps.close();
+
                 if (generatedKeys.next()) {
                     int lastInsertedId = generatedKeys.getInt(1);
                     obj.setNumHotel(lastInsertedId);
-
+                    ps.close();
                     return obj;
                 }
 

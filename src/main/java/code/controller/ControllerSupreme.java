@@ -36,12 +36,18 @@ public class ControllerSupreme extends AbstractController {
 		JButton ajouterBouton = m_panel.getBoutons().get(BOUTONS_SUPREME.AJOUTER.ordinal());
 		ajouterBouton.addActionListener(e -> afficherFormulaireHotel());
 		JButton etatHotelBouton = m_panel.getBoutons().get(BOUTONS_SUPREME.ETAT_HOTEL.ordinal());
-		etatHotelBouton.addActionListener(e -> fenetreEtat());
+		etatHotelBouton.addActionListener(e -> construirefenetreEtat());
 		JButton compteRenduBouton = m_panel.getBoutons().get(BOUTONS_SUPREME.COMPTE_RENDU.ordinal());
 		compteRenduBouton.addActionListener(e -> fenetreCompteRendu());	
 	}
 
-	private void enregistrerFormulaire() {
+	private Object fenetreCompteRendu() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private void enregistrerFormulaire() 
+	{
 		if (!m_panel.finirFormulaire())
 			return;
 		Formulaire formulaireHotel = m_panel.getFormulaire();
@@ -86,22 +92,22 @@ public class ControllerSupreme extends AbstractController {
 
 	// Recuperer la liste des services ici pour construire le formulaire d'ajout d'hotel
 	// Recuperer la liste des types de chambre ici pour construire le formulaire d'ajout d'hotel
-	private void afficherFormulaireHotel() {
+	private void afficherFormulaireHotel() 
+	{
 		List<TypeService> services = daoTypeService.findAll();
 		List<String> nomServices = new ArrayList<>();
 		for (TypeService service : services) {
 			nomServices.add(service.getNom());
 		}
 		m_panel.setFormulaireHotel(nomServices, daoChambre.getTypesChambres());
-		JButton confirmerFormulaireBouton = m_panel.getBoutons().get(BOUTONS_SUPREME.CONFIRMER_FORMULAIRE.ordinal());
-		confirmerFormulaireBouton.addActionListener(e -> enregistrerFormulaire());
-		
+		JButton validerFormulaireBouton = m_panel.getBoutons().get(BOUTONS_SUPREME.CONFIRMER_FORMULAIRE.ordinal());
+		validerFormulaireBouton.addActionListener(e -> enregistrerFormulaire());		
 	}
 
 	// Requete de recuperation des hotels à faire
 	// donnees Objet[][]
 	// enTete Objet[][]
-	private void fenetreEtat() {
+	private void construirefenetreEtat() {
 
 		List<Hotel> hotels = daoHotel.findAllLight();
 		Object[][] donnees = new Object[hotels.size()][16];
@@ -130,6 +136,7 @@ public class ControllerSupreme extends AbstractController {
                 }
                 return;
             }
+			
 			private void afficherPopUpDecision(Integer numHotel) {
 				Object[] options = {"Ajouter Service",
 	                    "Supprimer Service",
@@ -143,7 +150,7 @@ public class ControllerSupreme extends AbstractController {
 					    options,
 					    options[2]);
 						if (decision == 0)
-							;//afficherVueAjouterService(client);
+							afficherVueAjouterService(numHotel);
 						else if (decision == 1)
 							afficherVueSupprimerService(numHotel);
 						else if (decision == 2)
@@ -152,8 +159,67 @@ public class ControllerSupreme extends AbstractController {
 							;//afficherVueAjoutChambres();
 				
 			}
+			// A adapter par rapport à la fonction afficherVueAjouterService
+			private void afficherVueAjouterService(Integer numHotel) {
+				List<TypeService> servicesHotel = daoHotel.getServicesById(numHotel); // Changer cette requete par requete pour recuperer tous les services existants
+				String[] enTete = {"Service", "Prix"};
+				Object[][] donnees = new Object[servicesHotel.size()][16];
+				int i = 0;
+				for (TypeService service : servicesHotel) {
+					donnees[i][0] = service.getNom();
+					donnees[i][1] = service.getPrix();
+					++i;
+				}
+				Hotel hotelUpdated = new Hotel();
+				/*hotelUpdated.setNumHotel(numHotel);
+				hotelUpdated.setServices(servicesHotel); */
+
+				JTable table = m_panel.setTableauServicesAjouter(donnees, enTete);
+				table.addMouseListener(new MouseAdapter() {
+					public void mousePressed(MouseEvent e) {
+		                if (e.getClickCount() == 2) 
+		                {
+		                	JTable target = (JTable)e.getSource();
+		                    int row = target.getSelectedRow();
+		                    int column = target.getSelectedColumn();
+		                    String serviceAAjouter = (String)target.getModel().getValueAt(row, 0);
+		                    TypeService serviceToAdd = null;
+		                    /* for (TypeService service : hotelUpdated.getServices()) {
+		                    	if (service.getNom().equals(serviceASuppr)) {
+									serviceToRemove = service;
+									break;
+								}
+							}
+							if (serviceToRemove != null) {
+								hotelUpdated.getServices().remove(serviceToRemove);
+							} */
+
+		                    // Ici recuperer le service à ajouter
+		                    afficherPopUpConfirmationAjout(hotelUpdated);
+		                }
+		                return;	
+				}
+					
+					private void afficherPopUpConfirmationAjout(Hotel hotelUpdated) {
+						Object[] options = {"Oui", "Non"};
+						
+						int decision = JOptionPane.showOptionDialog(m_panel,
+							    "Etes-vous sûr(e) de vouloir ajouter ce service ?", "Ajout service",
+							    JOptionPane.YES_NO_CANCEL_OPTION,
+							    JOptionPane.QUESTION_MESSAGE,
+							    null,
+							    options,
+							    options[1]);
+								if (decision == 0)
+									daoHotel.updateServices(hotelUpdated);
+					}
+				});
+			}
+				
 			// recuperer les services
-			private void afficherVueSupprimerService(Integer numHotel) {
+
+			private void afficherVueSupprimerService(Integer numHotel) 
+			{
 				List<TypeService> servicesHotel = daoHotel.getServicesById(numHotel);
 				System.out.println(servicesHotel);
 				String[] enTete = {"Service", "Prix"};
@@ -170,7 +236,7 @@ public class ControllerSupreme extends AbstractController {
 				hotelUpdated.setNumHotel(numHotel);
 				hotelUpdated.setServices(servicesHotel);
 
-				JTable table = m_panel.setTableauServices(donnees, enTete);
+				JTable table = m_panel.setTableauServicesSupprimer(donnees, enTete);
 				table.addMouseListener(new MouseAdapter() {
 					public void mousePressed(MouseEvent e) {
 		                if (e.getClickCount() == 2) 
@@ -213,11 +279,6 @@ public class ControllerSupreme extends AbstractController {
 				});
 			}
 		});
-	}
-
-	private Object fenetreCompteRendu() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }
