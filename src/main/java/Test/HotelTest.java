@@ -9,6 +9,7 @@ import code.model.DAOJDBC.DAOHotelJDBC;
 import code.model.DAOJDBC.DAOTypeServiceJDBC;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,7 +33,7 @@ public class HotelTest {
         hotel.setLatitude(23.5465f);
         hotel.setLongitude(33.54654f);
 
-        Set<TypeService> services = new HashSet<>();
+        List<TypeService> services = new ArrayList<>();
         services.add(new DAOTypeServiceJDBC().getById("Restaurant"));
         services.add(new DAOTypeServiceJDBC().getById("Piscine"));
         hotel.setServices(services);
@@ -58,7 +59,7 @@ public class HotelTest {
     public void testUpdateServicesHotel() {
         Hotel hotel = daoHotelJDBC.getById(12);
         System.out.println(hotel);
-        Set<TypeService> services = new HashSet<>();
+        List<TypeService> services = new ArrayList<>();
         services.add(new DAOTypeServiceJDBC().getById("Petit-dejeuner"));
         services.add(new DAOTypeServiceJDBC().getById("Restaurant"));
         hotel.setServices(services);

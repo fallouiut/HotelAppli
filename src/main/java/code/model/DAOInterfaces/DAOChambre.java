@@ -6,6 +6,7 @@ import code.Hotel;
 import javafx.util.Pair;
 
 import java.sql.ResultSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -16,7 +17,8 @@ import java.util.Set;
 public interface DAOChambre extends DAO<Chambre, Pair<Integer, Integer>> {
 
     public int getNbChambres();
-    public Set<String> getTypeChambres();
+    public List<String> findTypesChambres();
+    public List<String> getTypesChambres();
     public Chambre createChambre(ResultSet resultSet);
     public EtatChambre getEtatChambre(Pair<Integer, Integer> idChambre);
     public void insertEntreeHistorique(Chambre obj);
