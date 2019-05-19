@@ -1,12 +1,13 @@
 package code;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class SimpleFacturationVisitor implements FacturationVisitor {
 
     private float prixTotal = 0;
-    private Map<String, Float> details = new HashMap<>();
+    private Map<String, Float> details = new LinkedHashMap<>();
 
 
     public Map<String, Float> getDetails() {

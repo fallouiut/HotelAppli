@@ -129,21 +129,26 @@ public class Reservation {
     }
 
     public void getDetailFacture(FacturationVisitor facturationVisitor){
+        // prix chambre
         for(Chambre chambre: this.chambres) {
             facturationVisitor.visit(chambre);
 
+            // prix option
             for (Option option : chambre.getOptions()) {
                 facturationVisitor.visit(option);
             }
         }
-            for(TypeService typeService: this.services) {
-                facturationVisitor.visit(typeService);
-            }
 
-            facturationVisitor.visit(this);
+        // type services
+        for(TypeService typeService: this.services) {
+            facturationVisitor.visit(typeService);
+        }
 
-            this.prixTotal = facturationVisitor.getPrixTotal();
-            this.facture = facturationVisitor.getDetails();
+        // reduction
+        facturationVisitor.visit(this);
+        // prix total
+        this.prixTotal = facturationVisitor.getPrixTotal();
+        this.facture = facturationVisitor.getDetails();
     }
 
     @Override
