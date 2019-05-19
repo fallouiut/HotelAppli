@@ -182,6 +182,27 @@ public class DAOReservationJDBC implements DAOReservation {
     }
 
     @Override
+    public int count(Integer integer) {
+        if(integer != null) {
+            try {
+                String query = "SELECT COUNT(*) FROM Reservation WHERE num_cl = ?";
+                PreparedStatement statement = connection.prepareStatement(query);
+                statement.setInt(1, integer);
+
+                ResultSet rset = statement.executeQuery();
+                while (rset.next()) {
+                    return rset.getInt(1);
+                }
+
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        return -1;
+    }
+
+    @Override
     public List<Chambre> getChambres(Integer integer) {
         try {
             if(integer != null) {

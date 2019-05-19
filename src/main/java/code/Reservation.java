@@ -12,6 +12,7 @@ public class Reservation {
     private float prixTotal;
     private float reduction;
 
+
     private Client client;
     private List<Chambre> chambres = new ArrayList<>();
     private List<TypeService> services = new ArrayList<>();
@@ -128,22 +129,32 @@ public class Reservation {
         this.services = services;
     }
 
-    public void getDetailFacture(FacturationVisitor facturationVisitor){
+    public void getDetailFacture(FacturationVisitor facturationVisitor, Reduction calculateurReduction){
+        // prix chambre
         for(Chambre chambre: this.chambres) {
             facturationVisitor.visit(chambre);
 
+            // prix option
             for (Option option : chambre.getOptions()) {
                 facturationVisitor.visit(option);
             }
         }
-            for(TypeService typeService: this.services) {
-                facturationVisitor.visit(typeService);
-            }
 
-            facturationVisitor.visit(this);
+        // type services
+        for(TypeService typeService: this.services) {
+            facturationVisitor.visit(typeService);
+        }
 
-            this.prixTotal = facturationVisitor.getPrixTotal();
-            this.facture = facturationVisitor.getDetails();
+        // prix total
+        // prix sans reduction
+        this.prixTotal = facturationVisitor.getPrixTotal();
+        // calcul reduction
+        calculateurReduction.calculer(this);
+        facturationVisitor.visit(this);
+
+        // prix avec reduction
+        this.prixTotal = facturationVisitor.getPrixTotal();
+        this.facture = facturationVisitor.getDetails();
     }
 
     @Override

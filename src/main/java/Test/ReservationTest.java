@@ -35,7 +35,8 @@ public class ReservationTest {
         //testUpdateLiensTypeService();
         //testFindHistoriqueClient();
         //testVisitor();
-        testEmail();
+        //testEmail();
+        count();
     }
 
     public static void deleteLiens() {
@@ -168,7 +169,7 @@ public class ReservationTest {
     public static void testVisitor() {
         Reservation r = new DAOReservationJDBC().getById(9);
 
-        r.getDetailFacture(new SimpleFacturationVisitor());
+        r.getDetailFacture(new SimpleFacturationVisitor(), new ReductionAnciennete());
 
         for (Map.Entry<String, Float> entry : r.getFacture().entrySet()) {
             System.out.println(entry.getKey() + " " + entry.getValue());
@@ -179,7 +180,7 @@ public class ReservationTest {
         try {
             Email email = new Email("Test", new DAOClientJDBC().getById(38));
             Reservation r = new DAOReservationJDBC().getById(9);
-            r.getDetailFacture(new SimpleFacturationVisitor());
+            r.getDetailFacture(new SimpleFacturationVisitor(), new ReductionAnciennete());
             email.facture(r);
         }  catch (NullPointerException e) {
             System.out.println(e.getMessage());
@@ -191,6 +192,10 @@ public class ReservationTest {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    public static void count() {
+        System.out.println(new DAOReservationJDBC().count(34));
     }
 
 }

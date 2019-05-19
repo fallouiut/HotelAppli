@@ -78,11 +78,9 @@ public class Email {
         System.out.println("Email sent successfully.");
     }
 
-
     public void facture(Reservation reservation) throws MessagingException{
-        System.out.println(reservation.getFacture() == null);
         this.message += ("Bonjour " + this.client.getPrenom() + " " + this.client.getNom().toUpperCase());
-        this.message += ("<br/>Voici la facture de votre séjour du " + reservation.getDateArrivee().toString() + " au " + reservation.getDateDepart().toString());
+        this.message += ("<br/>Voici la facture de votre sejour du " + reservation.getDateArrivee().toString() + " au " + reservation.getDateDepart().toString());
 
         this.message += ("<br/><div style=\"color: blue\">*------------------------------ FACTURE ------------------------------*</div>");
         for (Map.Entry<String, Float> entry : reservation.getFacture().entrySet()) {
@@ -94,8 +92,10 @@ public class Email {
         }
         this.message += ("<br/><div style=\"color: blue\">*------------------------------ FACTURE ------------------------------*</div>");
         this.message += "<br/>Vous vous connecterez sur votre compte afin de payer le montant";
-        this.message += "<br/>En vous souhaitant une bonne journée. Merci.";
+        this.message += "<br/>En vous souhaitant une bonne journee. Merci.";
         this.message += "<br/>Cordialement. Toute l'equipe de la chaîne d'hotel";
+
+        System.out.println(message);
 
         createEmailMessage();
         sendEmail();

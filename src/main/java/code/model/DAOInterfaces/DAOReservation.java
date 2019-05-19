@@ -9,6 +9,9 @@ import org.omg.CORBA.PUBLIC_MEMBER;
 import java.util.List;
 
 public interface DAOReservation extends DAO<Reservation, Integer> {
+
+    public int count(Integer integer);
+
     public List<Chambre> getChambres(Integer integer);
     public boolean deleteLiensChambre(Reservation reservation, Chambre chambre);
     public boolean insertLiensChambre(Reservation reservation, Chambre chambre);
