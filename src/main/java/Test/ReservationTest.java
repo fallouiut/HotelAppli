@@ -8,6 +8,8 @@ import code.model.DAOJDBC.DAOTypeServiceJDBC;
 import com.sun.org.apache.regexp.internal.RE;
 import javafx.util.Pair;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -32,7 +34,8 @@ public class ReservationTest {
         //testFindByEtatAndUpdate();
         //testUpdateLiensTypeService();
         //testFindHistoriqueClient();
-        testVisitor();
+        //testVisitor();
+        testEmail();
     }
 
     public static void deleteLiens() {
@@ -170,8 +173,24 @@ public class ReservationTest {
         for (Map.Entry<String, Float> entry : r.getFacture().entrySet()) {
             System.out.println(entry.getKey() + " " + entry.getValue());
         }
+    }
 
-
+    public static void testEmail() {
+        try {
+            Email email = new Email("Test", new DAOClientJDBC().getById(38));
+            Reservation r = new DAOReservationJDBC().getById(9);
+            r.getDetailFacture(new SimpleFacturationVisitor());
+            email.facture(r);
+        }  catch (NullPointerException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }catch (AddressException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        } catch (MessagingException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 }
