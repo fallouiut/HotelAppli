@@ -73,10 +73,9 @@ public class ControllerClientele extends AbstractController {
                 {
                 	JTable target = (JTable)e.getSource();
                     int row = target.getSelectedRow();
-                    int column = target.getSelectedColumn();
-                    afficherPopUpDecision();
 					numClient = (Integer)target.getModel().getValueAt(row, 0);
 					numReservation = (Integer)target.getModel().getValueAt(row, 4);
+                    afficherPopUpDecision();
                 }
                 return;
             }
