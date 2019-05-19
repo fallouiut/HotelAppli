@@ -20,6 +20,7 @@ import code.model.DAOInterfaces.DAOHotel;
 import code.model.DAOJDBC.DAOHotelJDBC;
 import code.view.Panels.SupremePanel;
 import code.view.Panels.SupremePanel.BOUTONS_SUPREME;
+import code.view.Vues.Formulaire;
 
 public class ControllerSupreme extends AbstractController {
 
@@ -34,40 +35,39 @@ public class ControllerSupreme extends AbstractController {
 	@Override
 	public void initController() {
 		JButton ajouterBouton = m_panel.getBoutons().get(BOUTONS_SUPREME.AJOUTER.ordinal());
-		ajouterBouton.addActionListener(e -> fenetreAjouter());
+		ajouterBouton.addActionListener(e -> afficherFormulaireHotel());
 		JButton etatHotelBouton = m_panel.getBoutons().get(BOUTONS_SUPREME.ETAT_HOTEL.ordinal());
 		etatHotelBouton.addActionListener(e -> fenetreEtat());
 		JButton compteRenduBouton = m_panel.getBoutons().get(BOUTONS_SUPREME.COMPTE_RENDU.ordinal());
 		compteRenduBouton.addActionListener(e -> fenetreCompteRendu());
 		
 	}
-	
-	private void fenetreAjouter() {
-		Object[] options = {"Ville",
-		                    "Hotel",
-		                    "Annuler"};
-		String decision = Integer.toString(JOptionPane.showOptionDialog(m_panel,
-		    "Voulez-vous ajouter une ville ou un hotel ?", "Ajouter dans la base",
-		    JOptionPane.YES_NO_CANCEL_OPTION,
-		    JOptionPane.QUESTION_MESSAGE,
-		    null,
-		    options,
-		    options[2]));
-		if (decision.equals(options[0]))
-			ajouterVille();
-		else if (decision.equals(options[1]))
-			ajouterHotel();
-		// Deprecated
-	}
 
-	// Requete d'ajout Hotel a faire
-	private void ajouterHotel() {
-			
-	}
-
-	// Requete d'ajout Ville a faire
-	private void ajouterVille() {
-		// TODO Auto-generated method stub
+	// Recuperer la liste des services ici pour construire le formulaire d'ajout d'hotel
+	// Recuperer la liste des types de chambre ici pour construire le formulaire d'ajout d'hotel
+	private void afficherFormulaireHotel() {
+		List <String> services = new ArrayList <String> ();
+		services.add("Menage");
+		services.add("Repas");
+		services.add("Wi-Fi");
+		services.add("Cable");
+		List <String> typesChambre = new ArrayList <String> ();
+		typesChambre.add("Simple");
+		typesChambre.add("Double");
+		typesChambre.add("Famille");
+		typesChambre.add("Suite");
+		m_panel.setFormulaireHotel(services, typesChambre);
+		Formulaire formulaireHotel = m_panel.getFormulaire();
+		while (formulaireHotel == null || !formulaireHotel.m_rempli);
+		// Utiliser les getters sur formulaireHotel pour récuperer les infos.
+		String nom = formulaireHotel.getNom();
+		String adresse = formulaireHotel.getAdresse();
+		String coord = formulaireHotel.getCoord();
+		ArrayList <String> servicesChoisis = formulaireHotel.getServicesChoisis();
+		ArrayList <ArrayList <String>> chambres = formulaireHotel.getChambresAjoutees();
+		// Une chambre => { Num etage, typeChambre, nombre lits }
+		
+		// Ici ajouter hotel et chambres
 		
 	}
 

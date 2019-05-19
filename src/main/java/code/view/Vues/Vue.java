@@ -18,10 +18,11 @@ import code.view.Panels.SupremePanel;
 
 public class Vue extends JFrame {
 	
-	public enum MENU_ITEM { DECONNECTION, RETOUR } ;
+	public enum MENU_ITEM { DECONNECTION, RETOUR, RESERVATION_DEMANDE, RESERVATION_CONFIRMATION } ;
 	private ArrayList <JMenuItem> m_menuItems = new ArrayList <JMenuItem> ();
 	private JMenu m_menu;
-	
+	private JMenu m_menuReservation;
+	private JMenuBar m_menuBar;
 	
 	public Vue ()
 	{
@@ -49,18 +50,37 @@ public class Vue extends JFrame {
 		m_menuItems.add(deconnectionItem);
 		JMenuItem retourItem = new JMenuItem("Retour");
 		m_menuItems.add(retourItem);
-		JMenuBar barre = new JMenuBar();
+		
+		m_menuReservation = new JMenu ("Reservation");
+		JMenuItem itemDemandee = new JMenuItem("Demandee");
+		m_menuItems.add(itemDemandee);
+		JMenuItem itemConfirmation = new JMenuItem("Confirmation");
+		m_menuItems.add(itemConfirmation);
+		m_menuReservation.setEnabled(true);
+		
+		m_menuBar = new JMenuBar();
 		m_menu.add(deconnectionItem);
 		m_menu.add(retourItem);
-		barre.add(m_menu);
-		setJMenuBar(barre);
+		m_menuReservation.add(itemConfirmation);
+		m_menuReservation.add(itemDemandee);
+		m_menuBar.add(m_menu);
+		setJMenuBar(m_menuBar);
 	}
 	
 	public ArrayList <JMenuItem> getMenuItem()
 	{
 		return m_menuItems;
 	}
-
+	
+	public JMenu getMenuReservation()
+	{
+		return m_menuReservation;
+	}
+	
+	public JMenuBar getBar()
+	{
+		return m_menuBar;
+	}
 	
 	public JMenu getMenu()
 	{

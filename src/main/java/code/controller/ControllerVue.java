@@ -4,7 +4,6 @@ import java.awt.CardLayout;
 import java.awt.Component;
 
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 
 import code.view.Panels.AccueilPanel;
 import code.view.Panels.ClientelePanel;
@@ -70,7 +69,11 @@ public class ControllerVue extends AbstractController {
 			new ControllerAccueil((AccueilPanel) getControlledPanel(getPanel(PANEL.ACCUEIL)), m_connection.getAdmin());
 		}
 		else if (m_retour)
+		{
 			returnValue = PANEL.ACCUEIL;
+			m_vue.getBar().removeAll();
+			m_vue.getBar().add(m_vue.getMenu());
+		}
 		else if (m_panelCourant == PANEL.ACCUEIL)
 		{
 			m_panelCourant =  ControllerAccueil.getProchainPanel();
@@ -97,9 +100,10 @@ public class ControllerVue extends AbstractController {
 		{
 			if (!m_reservationSet)
 			{
-				new ControllerReservation((ReservationPanel) getControlledPanel(getPanel(PANEL.RESERVATION)));
+				new ControllerReservation((ReservationPanel) getControlledPanel(getPanel(PANEL.RESERVATION)), m_vue.getMenuItem());
 				m_reservationSet = true;
 			}
+			m_vue.getBar().add(m_vue.getMenuReservation());
 		}
 		else if (m_panelCourant == PANEL.CLIENTELE)
 		{
