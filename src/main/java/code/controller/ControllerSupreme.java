@@ -61,7 +61,9 @@ public class ControllerSupreme extends AbstractController {
 		// Utiliser les getters sur formulaireHotel pour récuperer les infos.
 		String nom = formulaireHotel.getNom();
 		String adresse = formulaireHotel.getAdresse();
-		String coord = formulaireHotel.getCoord();
+		String coordLongi = formulaireHotel.getLatitude();
+		String coordLati = formulaireHotel.getLongitude();
+		String ville = formulaireHotel.getVille();
 
 		List <String> servicesChoisis = formulaireHotel.getServicesChoisis();
 		List <List <String>> chambres = formulaireHotel.getChambresAjoutees();
@@ -71,10 +73,10 @@ public class ControllerSupreme extends AbstractController {
 		// Ici ajouter hotel et chambres
 		Hotel newHotel = new Hotel();
 		newHotel.setNom(nom);
-		/*newHotel.setVille(ville);*/
 		newHotel.setAdresse(adresse);
-		newHotel.setLongitude(Float.parseFloat(coord));
-		newHotel.setLatitude(Float.parseFloat(coord));
+		newHotel.setLongitude(Float.parseFloat(coordLongi));
+		newHotel.setLatitude(Float.parseFloat(coordLati));
+		newHotel.setVille(ville);
 		newHotel = daoHotel.insert(newHotel);
 
 		List<TypeService> typesServices = new ArrayList<>();
