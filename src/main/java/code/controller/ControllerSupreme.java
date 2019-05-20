@@ -115,7 +115,7 @@ public class ControllerSupreme extends AbstractController {
 		for (TypeService service : services) {
 			nomServices.add(service.getNom());
 		}
-		m_panel.setFormulaireHotel(nomServices, daoChambre.getTypesChambres());
+        m_panel.setFormulaireHotel(nomServices, daoChambre.getTypesChambres());
 		JButton validerFormulaireBouton = m_panel.getBoutons().get(BOUTONS_SUPREME.CONFIRMER_FORMULAIRE.ordinal());
 		validerFormulaireBouton.addActionListener(e -> enregistrerFormulaire());		
 	}

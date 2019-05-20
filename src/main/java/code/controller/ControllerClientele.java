@@ -46,13 +46,13 @@ public class ControllerClientele extends AbstractController {
 
 
 		//TODO : remplacer plus tard par .get(0), là c'est juste pour test
-		Map<Client, Reservation> clientsPresents = daoClient.findByHotel(admin.getHotelsGeres().get(4));
+
+		Map<Client, Reservation> clientsPresents = daoClient.findByHotel(admin.getHotelsGeres().get(0));
 		Object[][] donnees = new Object[clientsPresents.size()][12];
 		System.out.println(clientsPresents);
 		int i = 0;
 		for (Map.Entry<Client, Reservation> entry : clientsPresents.entrySet()) {
-			donnees[i][0] =
-					entry.getKey().getNum();
+			donnees[i][0] = entry.getKey().getNum();
 			donnees[i][1] = entry.getKey().getPrenom();
 			donnees[i][2] = entry.getKey().getNom();
 			donnees[i][3] = entry.getKey().getNomEnteprise();

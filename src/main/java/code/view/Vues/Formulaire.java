@@ -175,14 +175,14 @@ public class Formulaire extends JFrame {
 	    	panelCourant.add(checkBox);
 	    	m_checkBoxesFormulaire.add(checkBox);
 	    	i++;
-	    	if (i%2 == 0) // 3 check box par panel
-	    	{
+	    	//if (i%2 == 0) // 3 check box par panel
+	    	//{
 	    		m_panelCentral.add(panelCourant);
 	    		panelCourant = new JPanel();
-	    	}
+	    	//}
 	    }
-		if (i%2 == 1) // Si nombre impair
-			m_panelCentral.add(new JPanel()); // On equilibre
+		//if (i%2 == 1) // Si nombre impair
+			//m_panelCentral.add(new JPanel()); // On equilibre
 	}
 	
 	private void setAjoutChambres(List <String> typesChambre)

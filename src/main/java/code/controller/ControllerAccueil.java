@@ -51,14 +51,19 @@ public class ControllerAccueil extends AbstractController {
 	
 	private void verifierDroits () 
 	{
-		if (m_Admin.getDroits().get(SUPREME))
-			m_panel.getBouton(SUPREME).setEnabled(true);
-		if (!m_Admin.getDroits().get(FACTURATION))
+		if (m_Admin.getDroits().get(FACTURATION))
 			m_panel.getBouton(FACTURATION).setEnabled(true);
 		if (m_Admin.getDroits().get(RESERVATION))
 			m_panel.getBouton(RESERVATION).setEnabled(true);
 		if (m_Admin.getDroits().get(CLIENTELE))
 			m_panel.getBouton(CLIENTELE).setEnabled(true);
+		if (m_Admin.getDroits().get(SUPREME)) {
+			m_panel.getBouton(SUPREME).setEnabled(true);
+			m_panel.getBouton(FACTURATION).setEnabled(false);
+			m_panel.getBouton(RESERVATION).setEnabled(false);
+			m_panel.getBouton(CLIENTELE).setEnabled(false);
+		}
+
 		m_panel.getBouton(SUPREME).setEnabled(true); // A ENLEVER
 	}
 	
