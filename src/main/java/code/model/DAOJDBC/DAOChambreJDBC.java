@@ -2,10 +2,14 @@ package code.model.DAOJDBC;
 
 import code.*;
 import code.model.ConnexionUnique;
+import code.model.DAOInterfaces.DAO;
 import code.model.DAOInterfaces.DAOChambre;
 import javafx.util.Pair;
 
+import javax.xml.transform.Result;
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
 
@@ -233,7 +237,7 @@ public class DAOChambreJDBC implements DAOChambre {
                 int nb = ps.executeUpdate();
                 ps.close();
 
-                if (obj.getEtat().getDateDebut() != null) {
+                if (obj.getEtat() != null && obj.getEtat().getDateDebut() != null) {
                     insertEntreeHistorique(obj);
                 }
 
@@ -320,6 +324,8 @@ public class DAOChambreJDBC implements DAOChambre {
                 ResultSet resultSet = ps.executeQuery();
                 if (resultSet.next()) {
                     return resultSet.getInt("num_c");
+                } else {
+                    return etage * 100;
                 }
             } catch (SQLException sqle) {
                 System.err.println("DAOChambreJDBC.getMaxNumChambre");
@@ -347,5 +353,31 @@ public class DAOChambreJDBC implements DAOChambre {
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean verifDatesTravaux(Integer numHotel, Integer numChambre, String dateDebut, String dateFin) {
+        if (numHotel != null && dateDebut != null && dateFin != null) {
+            String verifDatesTravauxQuery = "SELECT * FROM Historique WHERE num_h = ? AND num_c = ? AND (date_deb BETWEEN ? AND ? OR date_fin BETWEEN ? AND ?)";
+            try {
+                PreparedStatement ps = connection.prepareStatement(verifDatesTravauxQuery);
+                ps.setInt(1, numHotel);
+                ps.setInt(2, numChambre);
+                ps.setDate(3, java.sql.Date.valueOf(dateDebut));
+                ps.setDate(4, java.sql.Date.valueOf(dateFin));
+                ps.setDate(5, java.sql.Date.valueOf(dateDebut));
+                ps.setDate(6, java.sql.Date.valueOf(dateFin));
+                ResultSet resultSet = ps.executeQuery();
+                if (resultSet.next()) {
+                    return false;
+                }
+
+                return true;
+            } catch(SQLException sqle) {
+                System.err.println("DAOChambreJDBC.verifDatesTravaux");
+                sqle.printStackTrace();
+            }
+        }
+        return false;
     }
 }

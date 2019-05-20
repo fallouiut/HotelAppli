@@ -402,9 +402,6 @@ public class DAOHotelJDBC implements DAOHotel {
 
                     int deleteProposerResult = ps.executeUpdate();
 
-                    if (deleteProposerResult == 0) {
-                        throw new SQLException("Delete Proposer echouee");
-                    }
                 }
                 insertServices(obj.getNumHotel(), obj.getServices());
                 return true;

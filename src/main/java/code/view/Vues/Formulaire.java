@@ -91,7 +91,8 @@ public class Formulaire extends JFrame {
 		{
 			chambre = new ArrayList <String> ();
 			chambre.add(m_fieldsFormulaire.get(CHAMPS_FORMULAIRE.NUM_ETAGE.ordinal()).getText());
-			chambre.add(Integer.toString(m_typeChambreCombo.getSelectedIndex()));
+			//chambre.add(Integer.toString(m_typeChambreCombo.getSelectedIndex()));
+			chambre.add((String)(m_typeChambreCombo.getSelectedItem()));
 			m_chambresAjoutees.add(chambre);
 			System.out.println(chambre.toString());
 		}

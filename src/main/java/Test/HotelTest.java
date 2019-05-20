@@ -27,7 +27,7 @@ public class HotelTest {
     public void testInsertHotel() {
 
         Hotel hotel = new Hotel();
-        hotel.setNom("Hotel random");
+        hotel.setNom("raaaaaaaaaaaaa");
         hotel.setAdresse("Quelque part sur la planete terre");
         hotel.setVille("UneVille");
         hotel.setLatitude(23.5465f);

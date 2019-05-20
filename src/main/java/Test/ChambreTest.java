@@ -63,4 +63,11 @@ public class ChambreTest {
     public void testGetMaxNumChambre() {
         System.out.println(daoChambreJDBC.getMaxNumChambre(12, 1));
     }
+
+    @Test
+    public void testVerifDates() {
+        String dateDebut = "2019-05-13";
+        String dateFin = "2019-05-20";
+        System.out.println(daoChambreJDBC.verifDatesTravaux(1, 301, dateDebut, dateFin));
+    }
 }

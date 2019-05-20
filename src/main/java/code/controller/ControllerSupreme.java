@@ -6,9 +6,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -85,17 +87,22 @@ public class ControllerSupreme extends AbstractController {
 
 		daoHotel.insertServices(newHotel.getNumHotel(), typesServices);
 
+		System.out.println(chambres);
 		// Une chambre => { Num etage, typeChambre, nombre lits }
-		List<Chambre> newChambres = new ArrayList<>();
 		for (List<String> chambre : chambres) {
 			Integer numEtage = Integer.parseInt(chambre.get(0));
+			System.out.println(newHotel);
+			System.out.println(numEtage);
 			Integer numNewChambre = daoChambre.getMaxNumChambre(newHotel.getNumHotel(), numEtage) + 1;
 			String typeChambre = chambre.get(1);
 			Chambre newChambre = new Chambre();
 			newChambre.setNumHotel(newHotel.getNumHotel());
 			newChambre.setNumChambre(numNewChambre);
 			newChambre.setType(typeChambre);
-			daoChambre.insert(newChambre);
+			if (daoChambre.insert(newChambre) == null) {
+				//traitement erreur (pop-up ?)
+				System.err.println("bug à la chambre " + chambre);
+			}
 		}
 	}
 
@@ -163,9 +170,9 @@ public class ControllerSupreme extends AbstractController {
 						else if (decision == 1)
 							afficherVueSupprimerService(numHotel);
 						else if (decision == 2)
-							afficherVueTravaux();
+							afficherVueTravaux(numHotel);
 						else
-							afficherVueAjoutChambres();
+							afficherVueAjoutChambres(numHotel);
 				
 			}
 		});
@@ -173,18 +180,18 @@ public class ControllerSupreme extends AbstractController {
 	
 	// A adapter par rapport à la fonction afficherVueAjouterService
 	private void afficherVueAjouterService(Integer numHotel) {
-		List<TypeService> servicesHotel = daoHotel.getServicesById(numHotel); // Changer cette requete par requete pour recuperer tous les services existants
+		List<TypeService> services = daoTypeService.findAll(); // Changer cette requete par requete pour recuperer tous les services existants
 		String[] enTete = {"Service", "Prix"};
-		Object[][] donnees = new Object[servicesHotel.size()][16];
+		Object[][] donnees = new Object[services.size()][16];
 		int i = 0;
-		for (TypeService service : servicesHotel) {
+		for (TypeService service : services) {
 			donnees[i][0] = service.getNom();
 			donnees[i][1] = service.getPrix();
 			++i;
 		}
 		Hotel hotelUpdated = new Hotel();
-		/*hotelUpdated.setNumHotel(numHotel);
-		hotelUpdated.setServices(servicesHotel); */
+		hotelUpdated.setNumHotel(numHotel);
+		hotelUpdated.setServices(daoHotel.getServicesById(numHotel));
 
 		JTable table = m_panel.setTableauServicesAjouter(donnees, enTete);
 		table.addMouseListener(new MouseAdapter() {
@@ -193,18 +200,11 @@ public class ControllerSupreme extends AbstractController {
                 {
                 	JTable target = (JTable)e.getSource();
                     int row = target.getSelectedRow();
-                    int column = target.getSelectedColumn();
                     String serviceAAjouter = (String)target.getModel().getValueAt(row, 0);
-                    TypeService serviceToAdd = null;
-                    /* for (TypeService service : hotelUpdated.getServices()) {
-                    	if (service.getNom().equals(serviceASuppr)) {
-							serviceToRemove = service;
-							break;
-						}
+                    TypeService serviceToAdd = daoTypeService.getById(serviceAAjouter);
+                    if (!hotelUpdated.getServices().contains(serviceToAdd)) {
+                    	hotelUpdated.getServices().add(serviceToAdd);
 					}
-					if (serviceToRemove != null) {
-						hotelUpdated.getServices().remove(serviceToRemove);
-					} */
 
                     // Ici recuperer le service à ajouter
                     afficherPopUpConfirmationAjout(hotelUpdated);
@@ -213,6 +213,7 @@ public class ControllerSupreme extends AbstractController {
 		}
 			
 			private void afficherPopUpConfirmationAjout(Hotel hotelUpdated) {
+				System.out.println(hotelUpdated);
 				Object[] options = {"Oui", "Non"};
 				
 				int decision = JOptionPane.showOptionDialog(m_panel,
@@ -291,24 +292,32 @@ public class ControllerSupreme extends AbstractController {
 		});
 	}
 
-	private void afficherVueTravaux() {
+	private void afficherVueTravaux(Integer numHotel) {
 		JButton boutonValider = m_panel.setVueTravaux();
-		boutonValider.addActionListener(e -> enregistrerTravaux());
+		boutonValider.addActionListener(e -> enregistrerTravaux(numHotel));
 	}
 
 	// Enregistrer ici les dates de travaux
-	private void enregistrerTravaux() {
+	private void enregistrerTravaux(Integer numHotel) {
 		String dateDebut = m_panel.getDatesTravaux().get(0).getText();
 		String dateFin = m_panel.getDatesTravaux().get(1).getText();
-		if (verifierDate(dateDebut, dateFin))
+		//toutes les chambres de l'hotel (liste déroulante ?)
+		Set<Chambre> allChambres = daoHotel.getChambresById(numHotel);
+		//la chambre sur laquelle il a cliqué
+		int numChambreChoisie = 101;
+		if (verifierDate(numHotel, numChambreChoisie, dateDebut, dateFin))
 		{
-			// Enregistrer les dates
+			Chambre chambre = new Chambre();
+			chambre.setNumHotel(numHotel);
+			chambre.setNumChambre(numChambreChoisie);
+			chambre.setEtat(new EtatChambre("TRAVAUX", LocalDate.parse(dateDebut), LocalDate.parse(dateFin)));
+			daoChambre.insertEntreeHistorique(chambre);
 			return;
 		}
 	}
 
-	private boolean verifierDate(String dateDebut, String dateFin) {
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
+	private boolean verifierDate(Integer numHotel, Integer numChambre, String dateDebut, String dateFin) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 		    Date dateDebutParsed = sdf.parse(dateDebut);
 		    Date dateFinParsed = sdf.parse(dateFin);
@@ -317,21 +326,25 @@ public class ControllerSupreme extends AbstractController {
 		    	JOptionPane.showMessageDialog(m_panel, "La date de fin doit être postérieure à la date de début.", "Error", JOptionPane.WARNING_MESSAGE);
 		    	return false;
 		    }
+			if (!daoChambre.verifDatesTravaux(numHotel, numChambre, dateDebut, dateFin)) {
+				JOptionPane.showMessageDialog(m_panel, "Cette chambre est réservée ou en travaux dans cet intervalle de temps.", "Error", JOptionPane.WARNING_MESSAGE);
+				return false;
+			}
 
 		} catch (ParseException pe) {
-			JOptionPane.showMessageDialog(m_panel, "Veuillez insérer des dates dans le format jj/MM/aa", "Error", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(m_panel, "Veuillez insérer des dates dans le format yyyy-MM-dd", "Error", JOptionPane.WARNING_MESSAGE);
 		   return false;
 		}
 		return true;
 	}
 
-	private void afficherVueAjoutChambres() {
+	private void afficherVueAjoutChambres(Integer numHotel) {
 		JButton boutonValider = m_panel.setAjoutChambres(daoChambre.getTypesChambres());
-		boutonValider.addActionListener(e -> ajouterChambre());	
+		boutonValider.addActionListener(e -> ajouterChambre(numHotel));
 	}
 
 	// Ajouter ici une chambre
-	private void ajouterChambre() {
+	private void ajouterChambre(Integer numHotel) {
 		String typeChambre = (String) m_panel.getTypeChambre().getSelectedItem();
 		Integer numEtage = Integer.parseInt(m_panel.getNumEtage().getText());
 		Integer nbrChambres = (Integer) m_panel.getNbrChambres().getSelectedItem();
@@ -339,7 +352,21 @@ public class ControllerSupreme extends AbstractController {
 			return;
 		if (numEtage == null || nbrChambres == null)
 			return;
-		System.out.println("Chambre ajoutée");
+
+		for (int i = 0 ; i < nbrChambres ; ++i) {
+			Chambre newChambre = new Chambre();
+			newChambre.setNumChambre(daoChambre.getMaxNumChambre(numHotel, numEtage) + 1);
+			newChambre.setNumHotel(numHotel);
+			newChambre.setType(typeChambre);
+
+			if (daoChambre.insert(newChambre) == null) {
+				//traitement erreur (pop-up ?)
+				System.err.println("bug à la chambre " + newChambre);
+			}
+			else
+				System.out.println("Chambre ajoutée");
+		}
+
 		return;
 	}
 }
