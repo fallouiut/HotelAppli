@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -24,6 +25,10 @@ public class SupremePanel extends HotelPanel {
 	public enum BOUTONS_SUPREME { AJOUTER, ETAT_HOTEL, COMPTE_RENDU, CONFIRMER_FORMULAIRE };
 	private Formulaire m_formulaire = null;
 	private boolean m_formulaireFini = false;
+	private ArrayList <JTextField> m_datesTravaux = new ArrayList <JTextField> ();
+	private JComboBox <String> m_typeChambre;
+	private JComboBox <Integer> m_nbrChambres;
+	private JTextField m_numEtage;
 	
 	public SupremePanel(String type)
 	{
@@ -89,6 +94,77 @@ public class SupremePanel extends HotelPanel {
 		m_boutons.add(m_formulaire.getConfirmerBouton());
 	}
 	
+	public JButton setVueTravaux()
+	{
+		JFrame vueTravaux = new JFrame("Travaux");
+		vueTravaux.setLayout(new BorderLayout());
+		JPanel panelPrincipal = new JPanel(new GridLayout(0, 2));
+		JLabel LDateDebut, LDateFin;
+		LDateDebut = new JLabel("Date debut :");
+		LDateFin = new JLabel ("Date fin : ");
+		JTextField TDateDebut, TDateFin;
+		TDateDebut = new JTextField();
+		TDateDebut.setPreferredSize(new Dimension(100, 15));
+		m_datesTravaux.add(TDateDebut);
+		TDateFin = new JTextField();
+		TDateFin.setPreferredSize(new Dimension(100, 15));
+		m_datesTravaux.add(TDateFin);
+		
+		panelPrincipal.add(LDateDebut);
+		panelPrincipal.add(TDateDebut);
+		panelPrincipal.add(LDateFin);
+		panelPrincipal.add(TDateFin);
+		vueTravaux.add(panelPrincipal, BorderLayout.CENTER);
+		
+		JButton boutonConfirmer = new JButton("Valider");
+		vueTravaux.add(boutonConfirmer, BorderLayout.SOUTH);
+		
+		
+		vueTravaux.setVisible(true);
+		vueTravaux.pack();
+		return boutonConfirmer;
+		
+	}
+	
+	public JButton setAjoutChambres(List <String> typesChambre)
+	{
+		JFrame vueAjoutChambres = new JFrame("Ajout chambres");
+		vueAjoutChambres.setLayout(new BorderLayout());
+		JPanel panelPrincipal = new JPanel(new GridLayout(0, 2));
+		
+		JLabel LNumEtage, LTypeChambre, LNbrChambres;
+		LNumEtage = new JLabel("Numero Etage");
+        LTypeChambre = new JLabel("Type de chambre");
+        LNbrChambres = new JLabel("Nombre de chambres");
+
+        
+		m_numEtage = new JTextField();
+		m_numEtage.setPreferredSize(new Dimension(200, 20));
+		panelPrincipal.add(LNumEtage);
+		panelPrincipal.add(m_numEtage);
+		
+		m_typeChambre = new JComboBox <String> ();
+		for (String typeChambre : typesChambre)
+			m_typeChambre.addItem(typeChambre);
+		panelPrincipal.add(LTypeChambre);
+		panelPrincipal.add(m_typeChambre);
+		
+		m_nbrChambres = new JComboBox <Integer> ();
+		for (int i = 1; i < 10; i++)
+			m_nbrChambres.addItem(new Integer(i));
+		panelPrincipal.add(LNbrChambres);
+		panelPrincipal.add(m_nbrChambres);
+		
+		vueAjoutChambres.add(panelPrincipal, BorderLayout.CENTER);
+		
+		JButton boutonConfirmer = new JButton("Valider");
+		boutonConfirmer.addActionListener(e -> vueAjoutChambres.dispose());
+		vueAjoutChambres.add(boutonConfirmer, BorderLayout.SOUTH);	
+		
+		vueAjoutChambres.setVisible(true);
+		vueAjoutChambres.pack();
+		return boutonConfirmer;
+	}
 	public boolean finirFormulaire()
 	{
 		int continuer = JOptionPane.showConfirmDialog(
@@ -109,4 +185,23 @@ public class SupremePanel extends HotelPanel {
 		return m_formulaire;
 	}
 	
+	public JComboBox <String> getTypeChambre()
+	{
+		return m_typeChambre;
+	}
+	
+	public JComboBox <Integer> getNbrChambres()
+	{
+		return m_nbrChambres;
+	}
+	
+	public JTextField getNumEtage()
+	{
+		return m_numEtage;
+	}
+	
+	public ArrayList <JTextField> getDatesTravaux()
+	{
+		return m_datesTravaux;
+	}
 }

@@ -1,12 +1,21 @@
 package code.controller;
 
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 
 import code.*;
 import code.model.DAOInterfaces.DAOChambre;
@@ -154,131 +163,183 @@ public class ControllerSupreme extends AbstractController {
 						else if (decision == 1)
 							afficherVueSupprimerService(numHotel);
 						else if (decision == 2)
-							;//afficherVueTravaux();
+							afficherVueTravaux();
 						else
-							;//afficherVueAjoutChambres();
+							afficherVueAjoutChambres();
 				
-			}
-			// A adapter par rapport à la fonction afficherVueAjouterService
-			private void afficherVueAjouterService(Integer numHotel) {
-				List<TypeService> servicesHotel = daoHotel.getServicesById(numHotel); // Changer cette requete par requete pour recuperer tous les services existants
-				String[] enTete = {"Service", "Prix"};
-				Object[][] donnees = new Object[servicesHotel.size()][16];
-				int i = 0;
-				for (TypeService service : servicesHotel) {
-					donnees[i][0] = service.getNom();
-					donnees[i][1] = service.getPrix();
-					++i;
-				}
-				Hotel hotelUpdated = new Hotel();
-				/*hotelUpdated.setNumHotel(numHotel);
-				hotelUpdated.setServices(servicesHotel); */
-
-				JTable table = m_panel.setTableauServicesAjouter(donnees, enTete);
-				table.addMouseListener(new MouseAdapter() {
-					public void mousePressed(MouseEvent e) {
-		                if (e.getClickCount() == 2) 
-		                {
-		                	JTable target = (JTable)e.getSource();
-		                    int row = target.getSelectedRow();
-		                    int column = target.getSelectedColumn();
-		                    String serviceAAjouter = (String)target.getModel().getValueAt(row, 0);
-		                    TypeService serviceToAdd = null;
-		                    /* for (TypeService service : hotelUpdated.getServices()) {
-		                    	if (service.getNom().equals(serviceASuppr)) {
-									serviceToRemove = service;
-									break;
-								}
-							}
-							if (serviceToRemove != null) {
-								hotelUpdated.getServices().remove(serviceToRemove);
-							} */
-
-		                    // Ici recuperer le service à ajouter
-		                    afficherPopUpConfirmationAjout(hotelUpdated);
-		                }
-		                return;	
-				}
-					
-					private void afficherPopUpConfirmationAjout(Hotel hotelUpdated) {
-						Object[] options = {"Oui", "Non"};
-						
-						int decision = JOptionPane.showOptionDialog(m_panel,
-							    "Etes-vous sûr(e) de vouloir ajouter ce service ?", "Ajout service",
-							    JOptionPane.YES_NO_CANCEL_OPTION,
-							    JOptionPane.QUESTION_MESSAGE,
-							    null,
-							    options,
-							    options[1]);
-								if (decision == 0)
-									daoHotel.updateServices(hotelUpdated);
-					}
-				});
-			}
-				
-			// recuperer les services
-
-			private void afficherVueSupprimerService(Integer numHotel) 
-			{
-				List<TypeService> servicesHotel = daoHotel.getServicesById(numHotel);
-				System.out.println(servicesHotel);
-				String[] enTete = {"Service", "Prix"};
-				Object[][] donnees = new Object[servicesHotel.size()][16];
-
-				int i = 0;
-				for (TypeService service : servicesHotel) {
-					donnees[i][0] = service.getNom();
-					donnees[i][1] = service.getPrix();
-					++i;
-				}
-
-				Hotel hotelUpdated = new Hotel();
-				hotelUpdated.setNumHotel(numHotel);
-				hotelUpdated.setServices(servicesHotel);
-
-				JTable table = m_panel.setTableauServicesSupprimer(donnees, enTete);
-				table.addMouseListener(new MouseAdapter() {
-					public void mousePressed(MouseEvent e) {
-		                if (e.getClickCount() == 2) 
-		                {
-		                	JTable target = (JTable)e.getSource();
-		                    int row = target.getSelectedRow();
-		                    int column = target.getSelectedColumn();
-		                    String serviceASuppr = (String)target.getModel().getValueAt(row, 0);
-		                    TypeService serviceToRemove = null;
-		                    for (TypeService service : hotelUpdated.getServices()) {
-		                    	if (service.getNom().equals(serviceASuppr)) {
-									serviceToRemove = service;
-									break;
-								}
-							}
-							if (serviceToRemove != null) {
-								hotelUpdated.getServices().remove(serviceToRemove);
-							}
-
-		                    // Ici recuperer le service à supprimer
-		                    afficherPopUpConfirmationSupression(hotelUpdated);
-		                }
-		                return;
-		            }
-
-					private void afficherPopUpConfirmationSupression(Hotel hotelUpdated) {
-						Object[] options = {"Oui", "Non"};
-						
-						int decision = JOptionPane.showOptionDialog(m_panel,
-							    "Etes-vous sûr(e) de vouloir supprimer ce service ?", "Suppresion service",
-							    JOptionPane.YES_NO_CANCEL_OPTION,
-							    JOptionPane.QUESTION_MESSAGE,
-							    null,
-							    options,
-							    options[1]);
-								if (decision == 0)
-									daoHotel.updateServices(hotelUpdated);
-					}
-				
-				});
 			}
 		});
 	}
+	
+	// A adapter par rapport à la fonction afficherVueAjouterService
+	private void afficherVueAjouterService(Integer numHotel) {
+		List<TypeService> servicesHotel = daoHotel.getServicesById(numHotel); // Changer cette requete par requete pour recuperer tous les services existants
+		String[] enTete = {"Service", "Prix"};
+		Object[][] donnees = new Object[servicesHotel.size()][16];
+		int i = 0;
+		for (TypeService service : servicesHotel) {
+			donnees[i][0] = service.getNom();
+			donnees[i][1] = service.getPrix();
+			++i;
+		}
+		Hotel hotelUpdated = new Hotel();
+		/*hotelUpdated.setNumHotel(numHotel);
+		hotelUpdated.setServices(servicesHotel); */
 
+		JTable table = m_panel.setTableauServicesAjouter(donnees, enTete);
+		table.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+                if (e.getClickCount() == 2) 
+                {
+                	JTable target = (JTable)e.getSource();
+                    int row = target.getSelectedRow();
+                    int column = target.getSelectedColumn();
+                    String serviceAAjouter = (String)target.getModel().getValueAt(row, 0);
+                    TypeService serviceToAdd = null;
+                    /* for (TypeService service : hotelUpdated.getServices()) {
+                    	if (service.getNom().equals(serviceASuppr)) {
+							serviceToRemove = service;
+							break;
+						}
+					}
+					if (serviceToRemove != null) {
+						hotelUpdated.getServices().remove(serviceToRemove);
+					} */
+
+                    // Ici recuperer le service à ajouter
+                    afficherPopUpConfirmationAjout(hotelUpdated);
+                }
+                return;	
+		}
+			
+			private void afficherPopUpConfirmationAjout(Hotel hotelUpdated) {
+				Object[] options = {"Oui", "Non"};
+				
+				int decision = JOptionPane.showOptionDialog(m_panel,
+					    "Etes-vous sûr(e) de vouloir ajouter ce service ?", "Ajout service",
+					    JOptionPane.YES_NO_CANCEL_OPTION,
+					    JOptionPane.QUESTION_MESSAGE,
+					    null,
+					    options,
+					    options[1]);
+						if (decision == 0)
+							daoHotel.updateServices(hotelUpdated);
+			}
+		});
+	}
+		
+	// recuperer les services
+
+	private void afficherVueSupprimerService(Integer numHotel) 
+	{
+		List<TypeService> servicesHotel = daoHotel.getServicesById(numHotel);
+		System.out.println(servicesHotel);
+		String[] enTete = {"Service", "Prix"};
+		Object[][] donnees = new Object[servicesHotel.size()][16];
+
+		int i = 0;
+		for (TypeService service : servicesHotel) {
+			donnees[i][0] = service.getNom();
+			donnees[i][1] = service.getPrix();
+			++i;
+		}
+
+		Hotel hotelUpdated = new Hotel();
+		hotelUpdated.setNumHotel(numHotel);
+		hotelUpdated.setServices(servicesHotel);
+
+		JTable table = m_panel.setTableauServicesSupprimer(donnees, enTete);
+		table.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+                if (e.getClickCount() == 2) 
+                {
+                	JTable target = (JTable)e.getSource();
+                    int row = target.getSelectedRow();
+                    int column = target.getSelectedColumn();
+                    String serviceASuppr = (String)target.getModel().getValueAt(row, 0);
+                    TypeService serviceToRemove = null;
+                    for (TypeService service : hotelUpdated.getServices()) {
+                    	if (service.getNom().equals(serviceASuppr)) {
+							serviceToRemove = service;
+							break;
+						}
+					}
+					if (serviceToRemove != null) {
+						hotelUpdated.getServices().remove(serviceToRemove);
+					}
+
+                    // Ici recuperer le service à supprimer
+                    afficherPopUpConfirmationSupression(hotelUpdated);
+                }
+                return;
+            }
+
+			private void afficherPopUpConfirmationSupression(Hotel hotelUpdated) {
+				Object[] options = {"Oui", "Non"};
+				
+				int decision = JOptionPane.showOptionDialog(m_panel,
+					    "Etes-vous sûr(e) de vouloir supprimer ce service ?", "Suppresion service",
+					    JOptionPane.YES_NO_CANCEL_OPTION,
+					    JOptionPane.QUESTION_MESSAGE,
+					    null,
+					    options,
+					    options[1]);
+						if (decision == 0)
+							daoHotel.updateServices(hotelUpdated);
+			}
+		
+		});
+	}
+
+	private void afficherVueTravaux() {
+		JButton boutonValider = m_panel.setVueTravaux();
+		boutonValider.addActionListener(e -> enregistrerTravaux());
+	}
+
+	// Enregistrer ici les dates de travaux
+	private void enregistrerTravaux() {
+		String dateDebut = m_panel.getDatesTravaux().get(0).getText();
+		String dateFin = m_panel.getDatesTravaux().get(1).getText();
+		if (verifierDate(dateDebut, dateFin))
+		{
+			// Enregistrer les dates
+			return;
+		}
+	}
+
+	private boolean verifierDate(String dateDebut, String dateFin) {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
+		try {
+		    Date dateDebutParsed = sdf.parse(dateDebut);
+		    Date dateFinParsed = sdf.parse(dateFin);
+		    if (!dateDebutParsed.before(dateFinParsed))
+		    {
+		    	JOptionPane.showMessageDialog(m_panel, "La date de fin doit être postérieure à la date de début.", "Error", JOptionPane.WARNING_MESSAGE);
+		    	return false;
+		    }
+
+		} catch (ParseException pe) {
+			JOptionPane.showMessageDialog(m_panel, "Veuillez insérer des dates dans le format jj/MM/aa", "Error", JOptionPane.WARNING_MESSAGE);
+		   return false;
+		}
+		return true;
+	}
+
+	private void afficherVueAjoutChambres() {
+		JButton boutonValider = m_panel.setAjoutChambres(daoChambre.getTypesChambres());
+		boutonValider.addActionListener(e -> ajouterChambre());	
+	}
+
+	// Ajouter ici une chambre
+	private void ajouterChambre() {
+		String typeChambre = (String) m_panel.getTypeChambre().getSelectedItem();
+		Integer numEtage = Integer.parseInt(m_panel.getNumEtage().getText());
+		Integer nbrChambres = (Integer) m_panel.getNbrChambres().getSelectedItem();
+		if (typeChambre == null || typeChambre.isEmpty())
+			return;
+		if (numEtage == null || nbrChambres == null)
+			return;
+		System.out.println("Chambre ajoutée");
+		return;
+	}
 }
