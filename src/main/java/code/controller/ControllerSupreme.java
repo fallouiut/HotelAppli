@@ -14,6 +14,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTable;
 
 import code.*;
+import code.model.DAOInterfaces.DAOAdmin;
 import code.model.DAOInterfaces.DAOChambre;
 import code.model.DAOInterfaces.DAOHotel;
 import code.model.DAOInterfaces.DAOTypeService;
@@ -30,6 +31,7 @@ public class ControllerSupreme extends AbstractController {
 	private DAOHotel daoHotel = new DAOHotelJDBC();
 	private DAOTypeService daoTypeService = new DAOTypeServiceJDBC();
 	private DAOChambre daoChambre = new DAOChambreJDBC();
+	private DAOAdmin daoAdmin = new DAOAdminJDBC();
 	SupremePanel m_panel;
 	public ControllerSupreme(SupremePanel panel) {
 		super();
@@ -87,22 +89,42 @@ public class ControllerSupreme extends AbstractController {
 	private void ajouterAdmin(Hotel hotel) {
 		ArrayList <String> droitAdmin = new ArrayList <String> ();
 		for (JRadioButton bouton : m_panel.getDroitsAdmin())
-			droitAdmin.add(bouton.getText());
+			if (bouton.isSelected()) {
+				droitAdmin.add(bouton.getText());
+			}
+
 		String nomUtilisateur = m_panel.getNomUtilisateur();
 		String motDePasse = m_panel.getMotDePasse().toString();
 		if (!nomUtilisateur.equals("Nom d'utilisateur") && !motDePasse.equals("Mot de passe") && !nomUtilisateur.isEmpty() && !motDePasse.isEmpty())
 		{
-			// ajouter admin ici
-			JOptionPane.showMessageDialog(m_panel, "Administrateur créé !", "Succes", JOptionPane.INFORMATION_MESSAGE);
+			Admin admin = new Admin();
+			admin.setIdentifiant(nomUtilisateur);
+			admin.setMdp(motDePasse);
+			admin.setDroits(daoAdmin.initDroits());
+			for (String acces : droitAdmin) {
+				admin.getDroits().put(acces, true);
+			}
+			List<Integer> hotelGere = new ArrayList<>();
+			hotelGere.add(hotel.getNumHotel());
+			Admin result = daoAdmin.insert(admin);
+			if (result == admin) {
+				JOptionPane.showMessageDialog(m_panel, "Administrateur créé !", "Succes", JOptionPane.INFORMATION_MESSAGE);
+			} else {
+				JOptionPane.showMessageDialog(m_panel, "Echec lors de la création de l'administrateur", "Succes", JOptionPane.INFORMATION_MESSAGE);
+			}
 		}
 		return;
 	}
 
 	private void construirefenetreCompteRendu() 
 	{
-		// Recuperer ici les types de chambres
-		Object[][] donnees = null;
-		String [] enTete = {"Type Chambre", "Chambres Disponibles"};
+		List<String> typesChambres = daoChambre.getTypesChambres();
+		Object[][] donnees = new Object[typesChambres.size()][typesChambres.size()];
+		int i = 0;
+		for (String typeChambre : typesChambres) {
+			donnees[i++][0] = typeChambre;
+		}
+		String [] enTete = {"Type Chambre"};
 		JTable table = m_panel.setTableauEtat(donnees, enTete);
 		table.addMouseListener(new MouseAdapter() {
             
@@ -111,10 +133,18 @@ public class ControllerSupreme extends AbstractController {
                 {
                 	JTable target = (JTable)e.getSource();
                     int row = target.getSelectedRow();
-                    int column = target.getSelectedColumn();              
-                    String typeChambre = "luxe"; // Ici recuperer le type de service
-            		Object[][] donnees = null; // recuperer ici le nom des hotels, les chambres dispo et le prix des services
-            		String [] enTete = {"Nom Hotel", "Chambres Disponibles", "service 1", "service 2"};
+                    String typeChambre = (String)target.getModel().getValueAt(row, 0); // Ici recuperer le type de service
+					List<List<String>> infos = daoChambre.getInfosCompteRendu(typeChambre);
+            		Object[][] donnees = new Object[infos.size()][16]; // recuperer ici le nom des hotels, les chambres dispo et le prix des services
+					for (int i = 0 ; i < infos.size() ; ++i) {
+						donnees[i][0] = infos.get(i).get(0);
+						donnees[i][1] = infos.get(i).get(1);
+						donnees[i][2] = infos.get(i).get(2);
+						donnees[i][3] = infos.get(i).get(3);
+						donnees[i][4] = infos.get(i).get(4);
+						donnees[i][5] = infos.get(i).get(5);
+					}
+            		String [] enTete = {"Nom Hotel", "Chambres " + typeChambre + " Disponibles", "Prix chambre " + typeChambre, "Nombre de lits", "TV", "telephone"};
                     m_panel.setTableauEtatTypeChambre(donnees, enTete);
                 }
                 return;

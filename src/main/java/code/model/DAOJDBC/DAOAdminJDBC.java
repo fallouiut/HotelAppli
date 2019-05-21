@@ -123,12 +123,11 @@ public class DAOAdminJDBC implements DAOAdmin {
                 }
 
                 ResultSet generatedKeys = statement.getGeneratedKeys();
-                statement.close();
                 if (generatedKeys.next()) {
                     int lastInsertedId = generatedKeys.getInt(1);
                     insertDroits(lastInsertedId, obj.getDroits());
                     insertHotelsGeres(lastInsertedId, obj.getHotelsGeres());
-                    return obj;
+                    statement.close();
                 }
 
                 return obj;

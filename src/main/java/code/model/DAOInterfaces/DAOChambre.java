@@ -29,4 +29,6 @@ public interface DAOChambre extends DAO<Chambre, Pair<Integer, Integer>> {
     public Integer getNbChambresParType(Integer numHotel, String type);
     public boolean verifDatesTravaux(Integer numHotel, Integer numChambre, String dateDebut, String dateFin);
 
+    public List<List<String>> getInfosCompteRendu(String typeChambre);
+
 }

@@ -380,4 +380,42 @@ public class DAOChambreJDBC implements DAOChambre {
         }
         return false;
     }
+
+    @Override
+    public List<List<String>> getInfosCompteRendu(String typeChambre) {
+        if (typeChambre != null) {
+            try {
+                String queryCompteRendu = "SELECT DISTINCT nom_h, COUNT(DISTINCT C.num_c) CNT, TC.* FROM Chambre C";
+                queryCompteRendu += " JOIN ReservationChambre RC ON C.num_c = RC.num_c";
+                queryCompteRendu += " JOIN Reservation R ON RC.num_r = R.num_r";
+                queryCompteRendu += " JOIN Hotel H ON C.num_h = H.num_h";
+                queryCompteRendu += " JOIN TypeChambre TC ON C.nom_t = TC.nom_t";
+                queryCompteRendu += " WHERE C.nom_t = ?";
+                queryCompteRendu += " AND (R.dateAr_r > CURDATE() OR R.dateDep_r < CURDATE())";
+                queryCompteRendu += " GROUP BY nom_h";
+
+                PreparedStatement ps = connection.prepareStatement(queryCompteRendu);
+                ps.setString(1, typeChambre);
+                ResultSet resultSet = ps.executeQuery();
+
+                List<List<String>> result = new ArrayList<>();
+                while(resultSet.next()) {
+                    List<String> newLine = new ArrayList<>();
+                    newLine.add(resultSet.getString("nom_h"));
+                    newLine.add(Integer.toString(resultSet.getInt("CNT")));
+                    newLine.add(Float.toString(resultSet.getFloat("prix_t")));
+                    newLine.add(Integer.toString(resultSet.getInt("nbLits_t")));
+                    newLine.add(resultSet.getInt("tv_t") == 1 ? "Oui" : "Non");
+                    newLine.add(resultSet.getInt("telephone_t") == 1 ? "Oui" : "Non");
+                    result.add(newLine);
+                }
+                return result;
+
+            } catch (SQLException sqle) {
+                System.err.println("DAOChambreJDBC.getInfosCompteRendu");
+                sqle.printStackTrace();
+            }
+        }
+        return null;
+    }
 }
