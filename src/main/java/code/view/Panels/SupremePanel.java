@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -39,7 +38,7 @@ public class SupremePanel extends HotelPanel {
 	public SupremePanel(String type)
 	{
 		super(type);	
-		setLayout(new FlowLayout(FlowLayout.LEADING, 50, 50));
+		setLayout(new GridLayout(0, 2));
 		setPreferredSize(new Dimension(LONGUEUR, LARGEUR));
 		construireBoutons();
 	}

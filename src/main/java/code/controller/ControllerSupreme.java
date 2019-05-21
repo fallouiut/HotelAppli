@@ -49,7 +49,6 @@ public class ControllerSupreme extends AbstractController {
 		adminBouton.addActionListener(e -> construireFenetreAdmin());	
 	}
 	
-	// Recuperer ici les droits admins
 	private void construireFenetreAdmin() {
 		List<Hotel> hotels = daoHotel.findAllLight();
 		Object[][] donnees = new Object[hotels.size()][16];

@@ -57,14 +57,8 @@ public class ControllerAccueil extends AbstractController {
 			m_panel.getBouton(RESERVATION).setEnabled(true);
 		if (m_Admin.getDroits().get(CLIENTELE))
 			m_panel.getBouton(CLIENTELE).setEnabled(true);
-		if (m_Admin.getDroits().get(SUPREME)) {
+		if (!m_Admin.getDroits().get(SUPREME))
 			m_panel.getBouton(SUPREME).setEnabled(true);
-			m_panel.getBouton(FACTURATION).setEnabled(false);
-			m_panel.getBouton(RESERVATION).setEnabled(false);
-			m_panel.getBouton(CLIENTELE).setEnabled(false);
-		}
-
-		m_panel.getBouton(SUPREME).setEnabled(true); // A ENLEVER
 	}
 	
 	private void deciderProchainPanel(JButton bouton)

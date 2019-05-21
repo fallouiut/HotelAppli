@@ -1,7 +1,7 @@
 package code.view.Panels;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -10,7 +10,7 @@ public class AccueilPanel extends HotelPanel {
 	
 	public AccueilPanel(String type) {
 		super(type);	
-		setLayout(new FlowLayout(FlowLayout.LEADING, 50, 50));
+		setLayout(new GridLayout(0, 2));
 		setPreferredSize(new Dimension(LONGUEUR, LARGEUR));
 	}
 	
