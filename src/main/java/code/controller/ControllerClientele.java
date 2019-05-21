@@ -49,7 +49,6 @@ public class ControllerClientele extends AbstractController {
 
 		Map<Client, Reservation> clientsPresents = daoClient.findByHotel(admin.getHotelsGeres().get(0));
 		Object[][] donnees = new Object[clientsPresents.size()][12];
-		System.out.println(clientsPresents);
 		int i = 0;
 		for (Map.Entry<Client, Reservation> entry : clientsPresents.entrySet()) {
 			donnees[i][0] = entry.getKey().getNum();
@@ -114,9 +113,7 @@ public class ControllerClientele extends AbstractController {
 	// recuperer historique ici
 	private void montrerHistorique(Integer numClient, Integer numReservation)
 	{
-		System.out.println(numClient);
 		List<Reservation> reservations = daoReservation.findHistoriqueClient(numClient);
-		System.out.println(reservations);
 		Object [][] donnees = new Object[reservations.size()][16];
 
 		for (int i = 0 ; i < reservations.size() ; ++i) {
@@ -147,7 +144,6 @@ public class ControllerClientele extends AbstractController {
 			if (box.isSelected())
 				servicesAjoutes.add(box.getText());
 		}
-		System.out.println(servicesAjoutes.toString());
 		daoReservation.updateLiensTypeService(numReservation, servicesAjoutes);
 	}
 
@@ -160,7 +156,7 @@ public class ControllerClientele extends AbstractController {
 		try {
 			email.publicite(hotelLePlusProche);
 		} catch (MessagingException mee) {
-			System.err.println("ControllerClientele.envoyerPub");
+			System.out.println("ControllerClientele.envoyerPub");
 			mee.printStackTrace();
 		}
 		JOptionPane.showMessageDialog(m_panel, "Publicité envoyée !", "Publicité", JOptionPane.INFORMATION_MESSAGE);
