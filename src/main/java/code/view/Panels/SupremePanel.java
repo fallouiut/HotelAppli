@@ -7,13 +7,15 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -22,13 +24,17 @@ import code.view.Vues.Formulaire;
 
 public class SupremePanel extends HotelPanel {
 
-	public enum BOUTONS_SUPREME { AJOUTER, ETAT_HOTEL, COMPTE_RENDU, CONFIRMER_FORMULAIRE };
+	public enum BOUTONS_SUPREME { AJOUTER, ETAT_HOTEL, COMPTE_RENDU, AJOUTER_ADMIN, CONFIRMER_FORMULAIRE };
 	private Formulaire m_formulaire = null;
 	private boolean m_formulaireFini = false;
-	private ArrayList <JTextField> m_datesTravaux = new ArrayList <JTextField> ();
 	private JComboBox <String> m_typeChambre;
 	private JComboBox <Integer> m_nbrChambres;
 	private JTextField m_numEtage;
+	private JTextField m_nomUtilisateur;
+	private JTextField m_numChambre;
+	private ArrayList <JTextField> m_datesTravaux = new ArrayList <JTextField> ();
+	private JPasswordField m_motDePasse;
+	private JCheckBox m_droitsAdmins;
 	
 	public SupremePanel(String type)
 	{
@@ -54,6 +60,11 @@ public class SupremePanel extends HotelPanel {
 		boutonCompteRendu.setEnabled(true);
 		m_boutons.add(boutonCompteRendu);
 		add(boutonCompteRendu);
+		
+		JButton boutonAdmins = new JButton("Ajouter Admins");
+		boutonAdmins.setEnabled(true);
+		m_boutons.add(boutonAdmins);
+		add(boutonAdmins);
 	}
 	
 	public JTable setTableauHotels(Object[][] donnees, Object[] enTete) {
@@ -99,9 +110,10 @@ public class SupremePanel extends HotelPanel {
 		JFrame vueTravaux = new JFrame("Travaux");
 		vueTravaux.setLayout(new BorderLayout());
 		JPanel panelPrincipal = new JPanel(new GridLayout(0, 2));
-		JLabel LDateDebut, LDateFin;
+		JLabel LDateDebut, LDateFin, LNumChambre;
 		LDateDebut = new JLabel("Date debut :");
 		LDateFin = new JLabel ("Date fin : ");
+		LNumChambre = new JLabel ("Numero Chambre");
 		JTextField TDateDebut, TDateFin;
 		TDateDebut = new JTextField();
 		TDateDebut.setPreferredSize(new Dimension(100, 15));
@@ -109,7 +121,11 @@ public class SupremePanel extends HotelPanel {
 		TDateFin = new JTextField();
 		TDateFin.setPreferredSize(new Dimension(100, 15));
 		m_datesTravaux.add(TDateFin);
+		m_numChambre = new JTextField();
+		m_numChambre.setPreferredSize(new Dimension(100, 15));
 		
+		panelPrincipal.add(LNumChambre);
+		panelPrincipal.add(m_numChambre);
 		panelPrincipal.add(LDateDebut);
 		panelPrincipal.add(TDateDebut);
 		panelPrincipal.add(LDateFin);
@@ -165,8 +181,55 @@ public class SupremePanel extends HotelPanel {
 		vueAjoutChambres.pack();
 		return boutonConfirmer;
 	}
+	
+	public JTable setChoixHotelAdmin(Object[][] donnees, Object[] enTete)
+	{
+		JFrame vueChoixHotel = new JFrame("Choisir Hotel");
+		JTable table = new JTable(donnees, enTete);
+		vueChoixHotel.add(new JScrollPane(table));
+		vueChoixHotel.setVisible(true);
+		vueChoixHotel.pack();
+		return table;
+	}
+	
+	public JButton setVueAdmin(List <String> droitsAdmins)
+	{
+		JFrame vueAdmin = new JFrame("Creer admin");
+		vueAdmin.setLayout(new BorderLayout());
+		JPanel panelPrincipal = new JPanel(new GridLayout(0, 2));
+		
+		JLabel LIdentifiant, LMotDePasse;
+		LIdentifiant = new JLabel("Nom d'utilisateur");
+		LMotDePasse = new JLabel("Mot de passe");
+
+        m_nomUtilisateur = new JTextField();
+        m_nomUtilisateur.setPreferredSize(new Dimension(200, 20));
+		m_motDePasse = new JPasswordField();
+		m_motDePasse.setPreferredSize(new Dimension(200, 20));
+		panelPrincipal.add(LIdentifiant);
+		panelPrincipal.add(m_nomUtilisateur);
+		panelPrincipal.add(LMotDePasse);
+		panelPrincipal.add(m_motDePasse);
+		
+		m_droitsAdmins = new JCheckBox ();
+		for (String droit : droitsAdmins)
+			m_droitsAdmins.add(new JRadioButton(droit));
+		panelPrincipal.add(m_droitsAdmins);
+		
+		vueAdmin.add(panelPrincipal, BorderLayout.CENTER);
+		
+		JButton validerBouton = new JButton("Valider");
+		validerBouton.addActionListener(e -> vueAdmin.dispose());
+		vueAdmin.add(validerBouton, BorderLayout.SOUTH);
+		
+		vueAdmin.setVisible(true);
+		vueAdmin.pack();
+		return validerBouton;
+	}
+	
 	public boolean finirFormulaire()
 	{
+		m_formulaire.validerAjoutChambre();
 		int continuer = JOptionPane.showConfirmDialog(
 			    m_formulaire,
 			    "Voulez-vous ajouter d'autre chambres ?",
@@ -183,6 +246,11 @@ public class SupremePanel extends HotelPanel {
 	public Formulaire getFormulaire()
 	{
 		return m_formulaire;
+	}
+	
+	public JTextField getNumChambre()
+	{
+		return m_numChambre;
 	}
 	
 	public JComboBox <String> getTypeChambre()
@@ -203,5 +271,20 @@ public class SupremePanel extends HotelPanel {
 	public ArrayList <JTextField> getDatesTravaux()
 	{
 		return m_datesTravaux;
+	}
+
+	public JCheckBox getDroitsAdmin()
+	{
+		return m_droitsAdmins;
+	}
+	
+	public String getNomUtilisateur()
+	{
+		return m_nomUtilisateur.getText();
+	}
+	
+	public char[] getMotDePasse()
+	{
+		return m_motDePasse.getPassword();
 	}
 }
