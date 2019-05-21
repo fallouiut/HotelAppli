@@ -353,8 +353,12 @@ public class ControllerSupreme extends AbstractController {
 		});
 	}
 
-	private void afficherVueTravaux(Integer numHotel) {
-		JButton boutonValider = m_panel.setVueTravaux();
+	private void afficherVueTravaux(Integer numHotel) 
+	{
+		ArrayList <Integer> numeroChambres = new ArrayList <Integer> ();
+		for (Chambre chambre : daoHotel.getChambresById(numHotel))
+			numeroChambres.add(chambre.getNumChambre());
+		JButton boutonValider = m_panel.setVueTravaux(numeroChambres);
 		boutonValider.addActionListener(e -> enregistrerTravaux(numHotel));
 	}
 
@@ -362,10 +366,8 @@ public class ControllerSupreme extends AbstractController {
 	private void enregistrerTravaux(Integer numHotel) {
 		String dateDebut = m_panel.getDatesTravaux().get(0).getText();
 		String dateFin = m_panel.getDatesTravaux().get(1).getText();
-		//toutes les chambres de l'hotel (liste déroulante ?)
-		Set<Chambre> allChambres = daoHotel.getChambresById(numHotel);
 		//la chambre sur laquelle il a cliqué
-		int numChambreChoisie = Integer.parseInt(m_panel.getNumChambre().getText());
+		int numChambreChoisie = (int) m_panel.getNumChambres().getSelectedItem();
 		if (verifierDate(numHotel, numChambreChoisie, dateDebut, dateFin))
 		{
 			Chambre chambre = new Chambre();

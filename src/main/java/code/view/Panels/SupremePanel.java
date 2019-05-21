@@ -2,7 +2,6 @@ package code.view.Panels;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
+import code.Chambre;
 import code.view.Vues.Formulaire;
 
 public class SupremePanel extends HotelPanel {
@@ -30,7 +30,7 @@ public class SupremePanel extends HotelPanel {
 	private JComboBox <Integer> m_nbrChambres;
 	private JTextField m_numEtage;
 	private JTextField m_nomUtilisateur;
-	private JTextField m_numChambre;
+	private JComboBox <Integer> m_numChambres;
 	private ArrayList <JTextField> m_datesTravaux = new ArrayList <JTextField> ();
 	private JPasswordField m_motDePasse;
 	private ArrayList<JRadioButton> m_droitsAdmins;
@@ -123,7 +123,7 @@ public class SupremePanel extends HotelPanel {
 		m_boutons.add(m_formulaire.getConfirmerBouton());
 	}
 	
-	public JButton setVueTravaux()
+	public JButton setVueTravaux(ArrayList <Integer> numeroChambres)
 	{
 		JFrame vueTravaux = new JFrame("Travaux");
 		vueTravaux.setLayout(new BorderLayout());
@@ -139,11 +139,12 @@ public class SupremePanel extends HotelPanel {
 		TDateFin = new JTextField();
 		TDateFin.setPreferredSize(new Dimension(100, 15));
 		m_datesTravaux.add(TDateFin);
-		m_numChambre = new JTextField();
-		m_numChambre.setPreferredSize(new Dimension(100, 15));
+		m_numChambres = new JComboBox <Integer> ();
+		for (Integer numeroChambre : numeroChambres)
+			m_numChambres.addItem(numeroChambre);
 		
 		panelPrincipal.add(LNumChambre);
-		panelPrincipal.add(m_numChambre);
+		panelPrincipal.add(m_numChambres);
 		panelPrincipal.add(LDateDebut);
 		panelPrincipal.add(TDateDebut);
 		panelPrincipal.add(LDateFin);
@@ -273,9 +274,9 @@ public class SupremePanel extends HotelPanel {
 		return m_formulaire;
 	}
 	
-	public JTextField getNumChambre()
+	public JComboBox <Integer> getNumChambres()
 	{
-		return m_numChambre;
+		return m_numChambres;
 	}
 	
 	public JComboBox <String> getTypeChambre()
