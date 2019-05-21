@@ -1,7 +1,4 @@
 package code.controller;
-
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.ParseException;
@@ -12,17 +9,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 
 import code.*;
 import code.model.DAOInterfaces.DAOChambre;
 import code.model.DAOInterfaces.DAOHotel;
 import code.model.DAOInterfaces.DAOTypeService;
+import code.model.DAOJDBC.DAOAdminJDBC;
 import code.model.DAOJDBC.DAOChambreJDBC;
 import code.model.DAOJDBC.DAOHotelJDBC;
 import code.model.DAOJDBC.DAOTypeServiceJDBC;
@@ -49,12 +44,83 @@ public class ControllerSupreme extends AbstractController {
 		JButton etatHotelBouton = m_panel.getBoutons().get(BOUTONS_SUPREME.ETAT_HOTEL.ordinal());
 		etatHotelBouton.addActionListener(e -> construirefenetreEtat());
 		JButton compteRenduBouton = m_panel.getBoutons().get(BOUTONS_SUPREME.COMPTE_RENDU.ordinal());
-		compteRenduBouton.addActionListener(e -> fenetreCompteRendu());	
+		compteRenduBouton.addActionListener(e -> construirefenetreCompteRendu());	
+		JButton adminBouton = m_panel.getBoutons().get(BOUTONS_SUPREME.AJOUTER_ADMIN.ordinal());
+		adminBouton.addActionListener(e -> construireFenetreAdmin());	
+	}
+	
+	// Recuperer ici les droits admins
+	private void construireFenetreAdmin() {
+		List<Hotel> hotels = daoHotel.findAllLight();
+		Object[][] donnees = new Object[hotels.size()][16];
+		int i = 0;
+		for (Hotel hotel : hotels) {
+			donnees[i][0] = hotel.getNumHotel();
+			donnees[i][1] = hotel.getNom();
+			donnees[i][2] = hotel.getVille();
+			donnees[i][3] = hotel.getAdresse();
+			++i;
+		}
+		String [] enTete = {"Num hotel", "Nom", "Ville", "Adresse"};
+		JTable table = m_panel.setChoixHotelAdmin(donnees, enTete);
+		table.addMouseListener(new MouseAdapter() {
+            
+			public void mousePressed(MouseEvent e) {
+                if (e.getClickCount() == 2) 
+                {
+                	JTable target = (JTable)e.getSource();
+                    int row = target.getSelectedRow();
+                    int column = target.getSelectedColumn();              
+					Integer numHotel = (Integer)target.getModel().getValueAt(row, 0);
+					Hotel hotel = daoHotel.getById(numHotel);
+					List <String> droitsAdmins = new ArrayList <String> ();
+					for (TypeAcces acces : DAOAdminJDBC.getTypesAcces())
+						droitsAdmins.add(acces.getTypeAcces());
+					JButton bouton = m_panel.setVueAdmin(droitsAdmins);
+					bouton.addActionListener(e1 -> ajouterAdmin(hotel));
+                }
+                return;
+			}
+		});
 	}
 
-	private Object fenetreCompteRendu() {
-		// TODO Auto-generated method stub
-		return null;
+	// Ajouter requete d'ajout d'admin ici
+	private void ajouterAdmin(Hotel hotel) {
+		ArrayList <String> droitAdmin = new ArrayList <String> ();
+		for (JRadioButton bouton : m_panel.getDroitsAdmin())
+			droitAdmin.add(bouton.getText());
+		String nomUtilisateur = m_panel.getNomUtilisateur();
+		String motDePasse = m_panel.getMotDePasse().toString();
+		if (!nomUtilisateur.equals("Nom d'utilisateur") && !motDePasse.equals("Mot de passe") && !nomUtilisateur.isEmpty() && !motDePasse.isEmpty())
+		{
+			// ajouter admin ici
+			JOptionPane.showMessageDialog(m_panel, "Administrateur créé !", "Succes", JOptionPane.INFORMATION_MESSAGE);
+		}
+		return;
+	}
+
+	private void construirefenetreCompteRendu() 
+	{
+		// Recuperer ici les types de chambres
+		Object[][] donnees = null;
+		String [] enTete = {"Type Chambre", "Chambres Disponibles"};
+		JTable table = m_panel.setTableauEtat(donnees, enTete);
+		table.addMouseListener(new MouseAdapter() {
+            
+			public void mousePressed(MouseEvent e) {
+                if (e.getClickCount() == 2) 
+                {
+                	JTable target = (JTable)e.getSource();
+                    int row = target.getSelectedRow();
+                    int column = target.getSelectedColumn();              
+                    String typeChambre = "luxe"; // Ici recuperer le type de service
+            		Object[][] donnees = null; // recuperer ici le nom des hotels, les chambres dispo et le prix des services
+            		String [] enTete = {"Nom Hotel", "Chambres Disponibles", "service 1", "service 2"};
+                    m_panel.setTableauEtatTypeChambre(donnees, enTete);
+                }
+                return;
+			}
+		});
 	}
 
 	private void enregistrerFormulaire() 
@@ -99,10 +165,8 @@ public class ControllerSupreme extends AbstractController {
 			newChambre.setNumHotel(newHotel.getNumHotel());
 			newChambre.setNumChambre(numNewChambre);
 			newChambre.setType(typeChambre);
-			if (daoChambre.insert(newChambre) == null) {
-				//traitement erreur (pop-up ?)
-				System.err.println("bug à la chambre " + chambre);
-			}
+			if (daoChambre.insert(newChambre) == null)
+				JOptionPane.showMessageDialog(m_panel, "Erreur dans l'insertion de la chambre.", "Error", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
@@ -121,8 +185,6 @@ public class ControllerSupreme extends AbstractController {
 	}
 
 	// Requete de recuperation des hotels à faire
-	// donnees Objet[][]
-	// enTete Objet[][]
 	private void construirefenetreEtat() {
 
 		List<Hotel> hotels = daoHotel.findAllLight();
@@ -304,7 +366,7 @@ public class ControllerSupreme extends AbstractController {
 		//toutes les chambres de l'hotel (liste déroulante ?)
 		Set<Chambre> allChambres = daoHotel.getChambresById(numHotel);
 		//la chambre sur laquelle il a cliqué
-		int numChambreChoisie = 101;
+		int numChambreChoisie = Integer.parseInt(m_panel.getNumChambre().getText());
 		if (verifierDate(numHotel, numChambreChoisie, dateDebut, dateFin))
 		{
 			Chambre chambre = new Chambre();
@@ -353,20 +415,18 @@ public class ControllerSupreme extends AbstractController {
 		if (numEtage == null || nbrChambres == null)
 			return;
 
-		for (int i = 0 ; i < nbrChambres ; ++i) {
+		for (int i = 0 ; i < nbrChambres; ++i) {
 			Chambre newChambre = new Chambre();
 			newChambre.setNumChambre(daoChambre.getMaxNumChambre(numHotel, numEtage) + 1);
 			newChambre.setNumHotel(numHotel);
 			newChambre.setType(typeChambre);
 
 			if (daoChambre.insert(newChambre) == null) {
-				//traitement erreur (pop-up ?)
-				System.err.println("bug à la chambre " + newChambre);
+				JOptionPane.showMessageDialog(m_panel, "Erreur lors de l'ajout de nouvelles chambres.", "Error", JOptionPane.WARNING_MESSAGE);
+				return;
 			}
-			else
-				System.out.println("Chambre ajoutée");
 		}
-
+		JOptionPane.showMessageDialog(m_panel, "Chambre(s) ajoutée(s) !", "Success", JOptionPane.INFORMATION_MESSAGE);
 		return;
 	}
 }

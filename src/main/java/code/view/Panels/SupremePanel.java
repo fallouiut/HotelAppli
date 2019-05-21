@@ -34,7 +34,7 @@ public class SupremePanel extends HotelPanel {
 	private JTextField m_numChambre;
 	private ArrayList <JTextField> m_datesTravaux = new ArrayList <JTextField> ();
 	private JPasswordField m_motDePasse;
-	private JCheckBox m_droitsAdmins;
+	private ArrayList<JRadioButton> m_droitsAdmins;
 	
 	public SupremePanel(String type)
 	{
@@ -67,8 +67,18 @@ public class SupremePanel extends HotelPanel {
 		add(boutonAdmins);
 	}
 	
-	public JTable setTableauHotels(Object[][] donnees, Object[] enTete) {
+	public JTable setTableauEtat(Object[][] donnees, Object[] enTete) {
 		
+		JFrame vueHotels = new JFrame ("Compte Rendu Etat");
+		vueHotels.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+		JTable table = new JTable(donnees, enTete);
+		vueHotels.add(new JScrollPane(table), BorderLayout.CENTER);
+		vueHotels.setVisible(true);
+		vueHotels.pack();	
+		return table;
+	}
+	
+	public JTable setTableauHotels(Object[][] donnees, Object[] enTete) {		
 		JFrame vueHotels = new JFrame ("Hotels");
 		vueHotels.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		JTable table = new JTable(donnees, enTete);
@@ -76,6 +86,15 @@ public class SupremePanel extends HotelPanel {
 		vueHotels.setVisible(true);
 		vueHotels.pack();	
 		return table;
+	}
+	
+	public void setTableauEtatTypeChambre(Object[][] donnees, Object[] enTete) {
+		JFrame vueHotels = new JFrame ("Repartition chambres disponibles");
+		vueHotels.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+		JTable table = new JTable(donnees, enTete);
+		vueHotels.add(new JScrollPane(table), BorderLayout.CENTER);
+		vueHotels.setVisible(true);
+		vueHotels.pack();
 	}
 	
 	public JTable setTableauServicesSupprimer(Object[][] donnees, Object[] enTete)
@@ -182,6 +201,7 @@ public class SupremePanel extends HotelPanel {
 		return boutonConfirmer;
 	}
 	
+	
 	public JTable setChoixHotelAdmin(Object[][] donnees, Object[] enTete)
 	{
 		JFrame vueChoixHotel = new JFrame("Choisir Hotel");
@@ -191,6 +211,7 @@ public class SupremePanel extends HotelPanel {
 		vueChoixHotel.pack();
 		return table;
 	}
+	
 	
 	public JButton setVueAdmin(List <String> droitsAdmins)
 	{
@@ -203,18 +224,21 @@ public class SupremePanel extends HotelPanel {
 		LMotDePasse = new JLabel("Mot de passe");
 
         m_nomUtilisateur = new JTextField();
-        m_nomUtilisateur.setPreferredSize(new Dimension(200, 20));
+        m_nomUtilisateur.setPreferredSize(new Dimension(200, 10));
 		m_motDePasse = new JPasswordField();
-		m_motDePasse.setPreferredSize(new Dimension(200, 20));
+		m_motDePasse.setPreferredSize(new Dimension(200, 10));
 		panelPrincipal.add(LIdentifiant);
 		panelPrincipal.add(m_nomUtilisateur);
 		panelPrincipal.add(LMotDePasse);
 		panelPrincipal.add(m_motDePasse);
 		
-		m_droitsAdmins = new JCheckBox ();
+		m_droitsAdmins = new ArrayList <JRadioButton> ();
 		for (String droit : droitsAdmins)
-			m_droitsAdmins.add(new JRadioButton(droit));
-		panelPrincipal.add(m_droitsAdmins);
+		{
+			JRadioButton radioButton = new JRadioButton(droit);
+			panelPrincipal.add(radioButton);
+			m_droitsAdmins.add(radioButton);
+		}
 		
 		vueAdmin.add(panelPrincipal, BorderLayout.CENTER);
 		
@@ -226,6 +250,7 @@ public class SupremePanel extends HotelPanel {
 		vueAdmin.pack();
 		return validerBouton;
 	}
+	
 	
 	public boolean finirFormulaire()
 	{
@@ -242,6 +267,7 @@ public class SupremePanel extends HotelPanel {
 		}
 		return m_formulaireFini;
 	}
+	
 	
 	public Formulaire getFormulaire()
 	{
@@ -273,7 +299,7 @@ public class SupremePanel extends HotelPanel {
 		return m_datesTravaux;
 	}
 
-	public JCheckBox getDroitsAdmin()
+	public ArrayList <JRadioButton> getDroitsAdmin()
 	{
 		return m_droitsAdmins;
 	}
@@ -287,4 +313,6 @@ public class SupremePanel extends HotelPanel {
 	{
 		return m_motDePasse.getPassword();
 	}
+
+
 }

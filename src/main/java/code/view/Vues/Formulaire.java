@@ -47,7 +47,6 @@ public class Formulaire extends JFrame {
 		m_validerBouton = new JButton("Continuer");
 		m_validerBouton.addActionListener(e -> continuerFormulaire());
 		m_confirmerFormulaireBouton = new JButton("Valider");
-		m_confirmerFormulaireBouton.addActionListener(e -> validerAjoutChambre());
 		setLayout(new BorderLayout());
 		add(m_panelCentral, BorderLayout.CENTER);
 		add(m_validerBouton, BorderLayout.SOUTH);
@@ -84,14 +83,13 @@ public class Formulaire extends JFrame {
 		pack();
 	}
 
-	private void validerAjoutChambre() 
+	public void validerAjoutChambre() 
 	{
 		ArrayList <String> chambre;
 		for (int i = 0; i < m_nombreChambresCombo.getSelectedIndex() + 1; i++)
 		{
 			chambre = new ArrayList <String> ();
 			chambre.add(m_fieldsFormulaire.get(CHAMPS_FORMULAIRE.NUM_ETAGE.ordinal()).getText());
-			//chambre.add(Integer.toString(m_typeChambreCombo.getSelectedIndex()));
 			chambre.add((String)(m_typeChambreCombo.getSelectedItem()));
 			m_chambresAjoutees.add(chambre);
 			System.out.println(chambre.toString());
@@ -175,14 +173,9 @@ public class Formulaire extends JFrame {
 	    	panelCourant.add(checkBox);
 	    	m_checkBoxesFormulaire.add(checkBox);
 	    	i++;
-	    	//if (i%2 == 0) // 3 check box par panel
-	    	//{
-	    		m_panelCentral.add(panelCourant);
-	    		panelCourant = new JPanel();
-	    	//}
+	    	m_panelCentral.add(panelCourant);
+	    	panelCourant = new JPanel();
 	    }
-		//if (i%2 == 1) // Si nombre impair
-			//m_panelCentral.add(new JPanel()); // On equilibre
 	}
 	
 	private void setAjoutChambres(List <String> typesChambre)
